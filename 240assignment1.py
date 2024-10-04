@@ -30,7 +30,7 @@ class Accounts:
 
     def deleteUser(self, ID):
         if self.is_empty():
-            raise 'Stack is empty'
+            raise Exception('Stack is empty')
         #find user matching ID
         current = self._head
         while current._id != ID:
@@ -57,7 +57,7 @@ class Accounts:
     
     def getMedianID(self):
         if self.is_empty():
-            raise 'Stack is empty'
+            raise Exception('Stack is empty')
         count = self._size // 2
         current = self._head._next
         if self._size % 2 != 0:
@@ -81,7 +81,7 @@ class Accounts:
             user2 = user2._next
         #check accounts match
         if user1._ssn != user2._ssn:
-            raise 'declined: accounts do not match'
+            raise Exception('declined: accounts do not match')
         #transfer funds
         if user1._id > user2._id:
             newAcc = user1
@@ -101,7 +101,7 @@ class Accounts:
     
     def top(self):
         if self.is_empty():
-            raise 'Stack is empty'
+            raise Exception('Stack is empty')
         return self._head._id
     
  
@@ -122,7 +122,7 @@ class _id_queue:
     
     def first(self):
         if self.is_empty():
-            raise 'Queue is empty'
+            raise Exception('Queue is empty')
         return self._head._id
     
     def enqueue(self, ID): #add to end of queue
@@ -136,7 +136,7 @@ class _id_queue:
 
     def dequeue(self): #return and remove from start of queue
         if self.is_empty():
-            raise 'Queue is empty'
+            raise Exception('Queue is empty')
         answer = self._head._id
         self._head = self._head._next
         self._size -= 1
