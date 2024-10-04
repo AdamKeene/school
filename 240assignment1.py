@@ -71,6 +71,28 @@ class Accounts:
                 count -= 1
             return "first middle node:", current._id, "middle node average:", (current._id + current._next._id) / 2
 
+    def mergeAccounts(self, ID1, ID2):
+        #find user nodes
+        user1 = self._head
+        user2 = self._head
+        while user1._id != ID1:
+            user1 = user1._next
+        while user2._id != ID2:
+            user2 = user2._next
+        #check accounts match
+        if user1._ssn != user2._ssn:
+            raise 'declined: accounts do not match'
+        #transfer funds
+        if user1._id > user2._id:
+            newAcc = user1
+            oldAcc = user2
+        else:
+            newAcc = user2
+            oldAcc = user1
+        newAcc._balance += oldAcc._balance
+        self.deleteUser(oldAcc._id)
+
+
     def __len__(self):
         return self._size
     
@@ -81,7 +103,8 @@ class Accounts:
         if self.is_empty():
             raise 'Stack is empty'
         return self._head._id
-
+    
+ 
 class _id_queue:
     class _Node:
         __slots__ = '_id', '_next'
@@ -132,3 +155,6 @@ print(accounts._head._next._balance, accounts._head._next._next._balance)
 accounts.deleteUser(0)
 print(accounts._head._next._name, accounts._head._next._next._name)
 print(id_queue.first())
+accounts.addUser(name='John Balls', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
+accounts.mergeAccounts(0,1)
+print(accounts._head._next._name, accounts._head._next._next._name)
