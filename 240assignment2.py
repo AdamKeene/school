@@ -16,11 +16,46 @@ class Stack:
         return self._data.pop()
     
     def is_empty(self):
-        print(len(self._data) == 0)
         return len(self._data) == 0
     
+    def postfix(self, tokens):
+        precedence = {'+': 1, '-': 1, '*': 2, '/': 2}
+        output = []
+        
+        for token in tokens:
+            if token.isdigit() or token.isnumeric():
+                output.append(token)
+            elif token in precedence:
+                while (not self.is_empty() and self.peek() in precedence and precedence[self.peek()] >= precedence[token]):
+                    output.append(self.pop())
+                self.push(token)
+        
+        while not self.is_empty():
+            output.append(self.pop())
+        
+        return output
+    
+    def evaluate_postfix(self, expression):
+        stack = Stack()
+        for token in expression:
+            if token.isnumeric():
+                stack.push(int(token))
+            else:
+                right = stack.pop()
+                left = stack.pop()
+                if token == '+':
+                    stack.push(left + right)
+                elif token == '-':
+                    stack.push(left - right)
+                elif token == '*':
+                    stack.push(left * right)
+                elif token == '/':
+                    stack.push(left / right)
+        return stack.pop()
+    
 str = "10 + 20 * 2"
-str = str.split()
+tokens = str.split()
 stack = Stack()
-for item in str:
-    stack.push(item)
+postfix_exp = stack.postfix(tokens)
+result = stack.evaluate_postfix(postfix_exp)
+print(result)
