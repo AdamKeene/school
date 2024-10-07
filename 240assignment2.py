@@ -18,7 +18,7 @@ class Stack:
     def is_empty(self):
         return len(self._data) == 0
     
-    def postfix(self, tokens):
+    def convert_to_postfix(self, tokens):
         precedence = {'+': 1, '-': 1, '*': 2, '/': 2}
         output = []
         
@@ -60,7 +60,7 @@ tokens = str.split()
 stack = Stack()
 postfix_exp = stack.postfix(tokens)
 result = stack.evaluate_postfix(postfix_exp)
-print(result)
+print(str + '=' + result)
 
 class Queue:
     default_capacity = 10
