@@ -72,9 +72,9 @@ class Queue:
     def enqueue(self, e):
         if self._size == len(self._data):
             self._resize(2 * len(self._data)) # double the array size
-        avail = (self. front + self. size) % len(self._data)
-        self.data[avail] = e
-        self.size += 1
+        avail = (self._front + self._size) % len(self._data)
+        self._data[avail] = e
+        self._size += 1
     
     def dequeue(self):
         if self.is_empty():
@@ -96,7 +96,7 @@ class Queue:
     def is_empty(self):
         return self._size == 0
     
-    def resize(self, cap): # we assume cap >= len(self)
+    def _resize(self, cap): # we assume cap >= len(self)
     #Resize to a new list of capacity >= len(self).
         old = self._data # keep track of existing list 
         self._data = [None] * cap # allocate list with new capacity
