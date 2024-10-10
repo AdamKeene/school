@@ -1,3 +1,6 @@
+#Q: add to id queue and check every time or add all ids to queue and always take from queue?
+# better way than ignoring first node every time?
+
 class Accounts:
     class _Node:
         __slots__ = '_id', '_prev', '_next', '_name', '_address', '_ssn', '_balance'
@@ -146,6 +149,7 @@ class _id_queue:
             
 accounts = Accounts()
 id_queue = _id_queue()
+
 accounts.addUser(name='John Balls', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
 accounts.addUser(name='John Sack', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
 print("added users:", accounts._head._next._name, accounts._head._next._next._name)

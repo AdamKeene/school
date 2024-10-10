@@ -80,7 +80,8 @@ class Queue:
         if self.is_empty():
             raise Exception('Queue is empty')
         answer = self._data[self._front]
-        self._data[self._front] = None # help garbage collection
+        self._data[self._front] = None
+        #index is the next in the queue even if it loops
         self._front = (self._front + 1) % len(self._data)
         self._size -= 1
         return answer
