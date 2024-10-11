@@ -106,3 +106,33 @@ class Queue:
             self._data[k] = old[walk] # intentionally shift indices
             walk = (1 + walk) % len(old) # use old size as modulus
         self._front = 0
+
+class StackWithTwoQs:
+    def __init__(self):
+        self.q1 = Queue()
+        self.q2 = Queue()
+    
+    def push(self, e):
+        self.q1.enqueue(e)
+    
+    def pop(self):
+        if self.q1.is_empty():
+            raise Exception('Stack is empty')
+        while self.q1.size() > 1:
+            self.q2.enqueue(self.q1.dequeue())
+        answer = self.q1.dequeue()
+        self.q1, self.q2 = self.q2, self.q1
+        return answer
+
+    def peek(self):
+        if self.q1.is_empty():
+            raise Exception('Stack is empty')
+        while self.q1.size() > 1:
+            self.q2.enqueue(self.q1.dequeue())
+        answer = self.q1.poll()
+        self.q2.enqueue(self.q1.dequeue())
+        self.q1, self.q2 = self.q2, self.q1
+        return answer
+    
+    def size(self):
+        return self.q1.size()
