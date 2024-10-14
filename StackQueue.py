@@ -58,9 +58,9 @@ class Stack:
 str = "10 + 20 * 2"
 tokens = str.split()
 stack = Stack()
-postfix_exp = stack.postfix(tokens)
+postfix_exp = stack.convert_to_postfix(tokens)
 result = stack.evaluate_postfix(postfix_exp)
-print(str + '=' + result)
+print(str, '=', result)
 
 class Queue:
     default_capacity = 10

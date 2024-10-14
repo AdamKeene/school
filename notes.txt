@@ -1,3 +1,6 @@
 assignment 1:
 assignment 2: 
 doubling size is faster bc remains O(1) instead of O(n), as it continues to grow the size continues to grow as well, also memory allocation
+assignment 3:
+MAD method multiply add divide: compression method which helps avoild collisions
+polynomial hash: 128 is arbitrary but power of 2 is efficient
