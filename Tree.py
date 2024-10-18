@@ -162,7 +162,7 @@ class LinkedBinaryTree(BinaryTree):
         node._right = self._Node(e, node)
         return self._make_position(node._right)
   
-    def _insert(self, p, e):
+    def _insert(self, p, e): #TODO change data format
         if p is None:
             return self._add_root(e)  # Add as root if tree is empty
         
