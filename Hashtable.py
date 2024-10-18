@@ -1,8 +1,8 @@
 from random import randrange
-from StackQueue import Stack, Queue
+import re
 
 class Hash:
-    def __init__(self, cap, p):
+    def __init__(self, cap=11, p=109345121):
         self._table = [None] * cap
         self._n = 0
         self._prime = p
@@ -21,40 +21,94 @@ class Hash:
     def __len__(self):
         return self._n
     
-    def __getitem__(self, k):
-        j = self._hash(k)
-        return self._bucket_getitem(j, k)
+    def __contains__(self, key):
+        j = self._hash(key)
+        return self._bucket_contains(j, key)
     
-    def __setitem__(self, k, v):
-        j = self._hash(k)
-        self._bucket_setitem(j, k, v)
+    def add(self, key):
+        j = self._hash(key)
+        self._bucket_add(j, key)
         if self._n > len(self._table) // 2:
             self._resize(2 * len(self._table) - 1)
 
-    def __delitem__(self, k):
-        j = self._hash(k)
-        self._bucket_delitem(j, k)
+    def remove(self, key):
+        j = self._hash(key)
+        self._bucket_remove(j, key)
         self._n -= 1
     
-    def _resize(self, c):
+    def _resize(self, new_size):
         old = list(self.items())
-        self._table = [None] * c
+        self._table = [None] * new_size
         self._n = 0
-        for (k, v) in old:
-            self[k] = v
+        for key in old:
+            self.add(key)
+    
+    def _size(self):
+        return len(self._table)
 
-def find_p(cap):
-    isPrime = False
-    size = cap
-    while isPrime == False:
-        size += 1
-        isPrime = True
-        for i in range(2, size):
-            if size % i == 0:
-                isPrime = False
-    return size
-p = find_p(10)
-hashh = Hash(cap=10, p=p)
-print(hashh._hash("hello"))
-hashh.__setitem__("hello")
-print(hashh._table)
+class ChainHashMap(Hash):
+    def _bucket_contains(self, j, key):
+        bucket = self._table[j]
+        if bucket is None:
+            return False
+        return key in bucket
+    
+    def _bucket_add(self, j, key):
+        if self._table[j] is None:
+            self._table[j] = set()
+        bucket = self._table[j]
+        if key not in bucket:
+            bucket.add(key)
+            self._n += 1
+    
+    def _bucket_remove(self, j, key):
+        bucket = self._table[j]
+        if bucket is None or key not in bucket:
+            raise KeyError("Key Error: " + repr(key))
+        bucket.remove(key)
+    
+    def __iter__(self):
+        for bucket in self._table:
+            if bucket is not None:
+                for key in bucket:
+                    yield key
+    
+    def items(self):
+        for bucket in self._table:
+            if bucket is not None:
+                for key in bucket:
+                    yield key
+
+    def __str__(self):
+        string = ""
+        for bucket in self._table:
+            if bucket is not None:
+                for key in bucket:
+                    string += key + "\n"
+        return string
+
+# Example usage
+p = 109345121
+chainhashtest = ChainHashMap(cap=10, p=p)
+
+print(chainhashtest._hash("hello"))
+
+chainhashtest.add("hello")
+print(chainhashtest._table)
+
+def find_anagrams(text):
+    chainhash = ChainHashMap()
+    with open(text, "r") as file:
+        print("File opened")
+        for line in file:
+            words = re.findall(r'\b\w+\b', line)
+            for word in words:
+                sorted_word = ''.join(sorted(word.lower()))  # Normalize case
+                j = chainhash._hash(sorted_word)
+                if not chainhash._bucket_contains(j, sorted_word):
+                    chainhash.add(sorted_word)
+    print("number of anagram roots: ", chainhash._size())
+    non_none_count = sum(1 for bucket in chainhash._table if bucket is not None)
+    print(f"Number of table objects that are not None: {non_none_count}")
+
+find_anagrams("pride-and-prejudice.txt")
