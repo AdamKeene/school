@@ -19,20 +19,22 @@ Task-2: Determine the Big-O notation for: (3 points)
     O(n^2)
 
     c) 𝑛^3 log 𝑛 + 2n + 1 + 3𝑛^2 + n(log 𝑛)^2
+    O(n^3 log n)
 
 Task-3: Determine the Complexity Of The Following Small Functions: (6 points)
     a) for (i = sum = 0; i < n; i++)
         sum += a[i];
+    O(n)
 
     b) for (i = 0; i < n; i++)
            for (j = 0; j < n; j++)
        a[i][j] = i*j;
+    O(n^2)
 
     c) for (i = n; i >= 1; i--)
             for (j = i; j <= n; j++) /* Note that the value of the inner loop variable (j) */
     ... /* depends on the value of the outer loop variable (i) */
-    Assignment 1: Algorithm Analysis
-    2
+    O(n)
 
     d) for (i = 1; i <= n; i++)
            for (j = i; j <= i; j++) /* Note that the value of the inner loop variable (j) */
