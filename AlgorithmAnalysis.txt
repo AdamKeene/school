@@ -3,13 +3,16 @@ Task-1: Count the number of primitive operations executed below and determine th
 (1 points)
 
     Algorithm: 𝑎rrayMin(A, n)
-    𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ← A[0]
-    𝑖 ← 1
+    𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ← A[0]: 1
+    𝑖 ← 1: 1
     𝐰𝐡𝐢𝐥𝐞 𝑖 ≤ 𝑛 − 1 𝐝𝐨
-        𝐢𝐟 𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ≥ A[𝑖] 𝐭𝐡𝐞𝐧
-            𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ← A[𝑖]
-        𝑖 ← 𝑖 + 1
-    𝐫𝐞𝐭𝐮𝐫𝐧 𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛
+        𝐢𝐟 𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ≥ A[𝑖] 𝐭𝐡𝐞𝐧: n
+            𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛 ← A[𝑖]: 1
+        𝑖 ← 𝑖 + 1: n
+    𝐫𝐞𝐭𝐮𝐫𝐧 𝑐𝑢𝑟𝑟𝑒𝑛𝑡𝑀𝑖𝑛: 1
+
+    The best case is when the array is in increasing order, and the worst case is decreasing order.
+    2n + 3 = O(n)
 
 Task-2: Determine the Big-O notation for: (3 points)
     a) 2 + n(2 + 3n)
@@ -34,20 +37,23 @@ Task-3: Determine the Complexity Of The Following Small Functions: (6 points)
     c) for (i = n; i >= 1; i--)
             for (j = i; j <= n; j++) /* Note that the value of the inner loop variable (j) */
     ... /* depends on the value of the outer loop variable (i) */
-    O(n)
+    O(n^2)
 
     d) for (i = 1; i <= n; i++)
            for (j = i; j <= i; j++) /* Note that the value of the inner loop variable (j) */
                ... /* depends on the value of the outer loop variable (i) */
+    O(n)
 
     e) for (i = 0; i < n; i++)
            for (j = n; j > 1; j/=2)
                ...
+    O(n log n)
 
     f) int factorial (int n)
-    {
-    if (n <= 1)
-    return 1;
-    else
-    return n * factorial(n-1);
-    }
+        {
+            if (n <= 1)
+                return 1;
+            else
+                return n * factorial(n-1);
+        }
+    O(n)
