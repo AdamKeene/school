@@ -4,7 +4,6 @@ class Node:
         self._left = left
         self._right = right
 
-
     class _Item:
         __slots__ = '_key', '_value'
 
@@ -20,7 +19,10 @@ class Node:
 
 class HeapBuilder(Node):
     def __init__ (self, contents=()):
-        self._data = [self._Item(k,v) for k,v in contents]
+        if contents and isinstance(contents[0], tuple):
+            self._data = [self._Item(k,v) for k,v in contents]
+        else:
+            self._data = [self._Item(k,k) for k in contents]
         if len(self._data) > 1:
             self._heapify()
 
@@ -33,14 +35,14 @@ class HeapBuilder(Node):
                 self._downheap(j, minheap=False)
 
     def create_max_heap(self, arr):
-        self._data = arr
+        self._data = [self._Item(k, k) for k in arr]
         self.heapify(False)
-        return self._data
-    
+        return [item._key for item in self._data]
+
     def create_min_heap(self, arr):
-        self._data = arr
+        self._data = [self._Item(k, k) for k in arr]
         self.heapify()
-        return self._data
+        return [item._key for item in self._data]
     
     def _parent(self, j):
         return (j - 1) // 2
@@ -60,11 +62,16 @@ class HeapBuilder(Node):
     def _swap(self, i, j):
         self._data[i], self._data[j] = self._data[j], self._data[i]
 
-    def _upheap(self, j):
+    def _upheap(self, j, minheap=True):
         parent = self._parent(j)
-        if j > 0 and self._data[j] < self._data[parent]:
-            self._swap(j, parent)
-            self._upheap(parent)
+        if minheap:
+            if j > 0 and self._data[j] < self._data[parent]:
+                self._swap(j, parent)
+                self._upheap(parent, minheap)
+        else:
+            if j > 0 and self._data[j] > self._data[parent]:
+                self._swap(j, parent)
+                self._upheap(parent, minheap=False)
 
     def _downheap(self, j, minheap=True):
         if self._has_left(j):
@@ -72,7 +79,7 @@ class HeapBuilder(Node):
             small_child = left
             if self._has_right(j):
                 right = self._right(j)
-                if self._data[right] < self._data[left]:
+                if (minheap and self._data[right] < self._data[left]) or (not minheap and self._data[right] > self._data[left]):
                     small_child = right
             if minheap:
                 if self._data[small_child] < self._data[j]:
@@ -81,7 +88,7 @@ class HeapBuilder(Node):
             else:
                 if self._data[small_child] > self._data[j]:
                     self._swap(j, small_child)
-                    self._downheap(small_child)
+                    self._downheap(small_child, minheap=False)
 
     def __len__(self):
         return len(self._data)
@@ -102,6 +109,14 @@ class HeapBuilder(Node):
         self._swap(0, len(self._data) - 1)
         item = self._data.pop()
         self._downheap(0)
+        return (item._key, item._value)
+    
+    def remove_max(self):
+        if self.is_empty():
+            raise ValueError('Priority queue is empty')
+        self._swap(0, len(self._data) - 1)
+        item = self._data.pop()
+        self._downheap(0, minheap=False)
         return (item._key, item._value)
     
 balls = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9]
