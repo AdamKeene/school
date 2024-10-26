@@ -29,14 +29,16 @@ def merge_sort(S):
     merge_sort(S1)  # sort copy of first half
     merge_sort(S2)  # sort copy of second half
     # merge results
-    merge(S1, S2, new_list)  # merge sorted halves back into S
-    return new_list
+    merge(S1, S2, S)  # merge sorted halves back into S
+
 # O(n log n) time
 
 def merge_sort_anagrams(S):
     sorted_strings = {}
     for string in S:
-        sorted_string = merge_sort(list(string))
+        sorted_string = list(string)
+        merge_sort(sorted_string)
+        sorted_string = "".join(sorted_string)
         try:
             sorted_strings[str(sorted_string)].append(string)
         except KeyError:
@@ -88,10 +90,13 @@ def quick_sort_anagrams(S):
             Q.enqueue(element)
 
         quick_sort(Q)
+        sorted_string = ""
+        while not Q.is_empty():
+            sorted_string += Q.dequeue()
         try:
-            sorted_strings[str(Q)].append(string)
+            sorted_strings[sorted_string].append(string)
         except KeyError:
-            sorted_strings[str(Q)] = [string]
+            sorted_strings[sorted_string] = [string]
     anagram_list = list(sorted_strings.values())
     return anagram_list
 
@@ -118,3 +123,18 @@ def heap_sort_anagrams(S):
     return anagram_list
 
 print(heap_sort_anagrams(strings))
+
+#587
+def radix_sort(S):
+    sorted_strings = {}
+    for string in S:
+        sorted_string = list(string)
+        sorted_string = [ord(char) for char in sorted_string]
+        sorted_string = heap_sort(sorted_string)
+        sorted_string = [chr(char) for char in sorted_string]
+        try:
+            sorted_strings[str(sorted_string)].append(string)
+        except KeyError:
+            sorted_strings[str(sorted_string)] = [string]
+    anagram_list = list(sorted_strings.values())
+    return anagram_list
