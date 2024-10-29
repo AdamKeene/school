@@ -67,7 +67,7 @@ class Graph:
             yield edge
 
     def insert_vertex(self, x=None):
-        v = self.Vertex(x)
+        v = Vertex(x)
         self._outgoing[v] = {}
         if self.is_directed():
             self._incoming[v] = {}
@@ -81,18 +81,19 @@ class Graph:
 city_graph = Graph()
 city_vertices = {}
 
-with open('C:\\Users\\akeen\\github\\school\\data_structures_and_algorithms\\city_population.txt', 'r') as f:
+with open('.\\data_structures_and_algorithms\\city_population.txt', 'r') as f:
     city_pop = f.readlines()
     city_pop = [line.strip() for line in city_pop]
     for line in city_pop:
         line = line.split(':')
-        line[1] = int(line[1])
-        city_pop[city_pop.index(line)] = line
+        city_graph.insert_vertex(line[0])
+        city_vertices[line[0]] = line[1]
+
 
 city_graph = Graph()
 city_vertices = {}
 
-with open('C:\\Users\\akeen\\github\\school\\data_structures_and_algorithms\\road_network.txt', 'r') as f:
+with open('.\\data_structures_and_algorithms\\road_network.txt', 'r') as f:
     road_network = f.readlines()
     road_network = [line.strip() for line in road_network]
     road_network = [line.split(',') for line in road_network]
