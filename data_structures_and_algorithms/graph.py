@@ -74,35 +74,26 @@ class Graph:
         return v
     
     def insert_edge(self, u, v, x=None):
-        e = self.Edge(u, v, x)
+        e = Edge(u, v, x)
+        if u not in self._outgoing:
+            self._outgoing[u] = {}
         self._outgoing[u][v] = e
         self._incoming[v][u] = e
 
 city_graph = Graph()
-city_vertices = {}
 
 with open('.\\data_structures_and_algorithms\\city_population.txt', 'r') as f:
     city_pop = f.readlines()
-    city_pop = [line.strip() for line in city_pop]
     for line in city_pop:
+        line = line.strip()
         line = line.split(':')
         city_graph.insert_vertex(line[0])
-        city_vertices[line[0]] = line[1]
-
-
-city_graph = Graph()
-city_vertices = {}
 
 with open('.\\data_structures_and_algorithms\\road_network.txt', 'r') as f:
     road_network = f.readlines()
-    road_network = [line.strip() for line in road_network]
-    road_network = [line.split(',') for line in road_network]
-    road_network = [[line[0], line[1]] for line in road_network]
-
-for city in city_pop:
-    city_vertices[city[0]] = city_graph.insert_vertex(city)
-
-for road in road_network:
-    city_graph.insert_edge(city_vertices[road[0]], city_vertices[road[1]])
+    for line in road_network:
+        line = line.strip()
+        line = line.split(':')
+        city_graph.insert_edge(line[0], line[1])
 
 print(city_graph.vertex_count())
