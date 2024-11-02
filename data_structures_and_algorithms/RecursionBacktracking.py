@@ -14,41 +14,39 @@ def checkPermutation(input1, input2):
 print(checkPermutation('eidbaooo', 'ab'))
 
 # https://www.codeproject.com/Articles/5260339/Recursion-and-Backtracking
-def chessQueenSorter(input):
-    def hasDiagonal(input, index):
-        for i in range(len(input)-1):
-            if i == index:
+def chessQueenSorter():
+    def hasDiagonal(board, col, value):
+        #col -= 1
+        for i in range(len(board)):
+            if i == col or board[i] == -1:
                 continue
-            if abs(input[i] - input[index]) == abs(i - index):
-                return i
-        return False
-    def hasHorizontal(input, index):
-        for i in range(len(input)-1):
-            if i == index:
-                continue
-            if input[i] == input[index]:
-                return i
+            if abs(board[i] - value) == abs(i - col):
+                return True
         return False
     
-    def candidates(board):
+    def get_candidates(board):
         candidates = []
         for i in range(1, 9):
             if i not in board:
                 candidates.append(i)
         return candidates
 
-    def backtrack(board, row, results):
-        if row == 8:
+    results = []
+    def find_solutions(board, col, results):
+        if col == 8:
             results.append(board[:])
             return
-        for candidate in candidates(board):
-            board[row] = candidate
-            if not hasHorizontal(board, row) and not hasDiagonal(board, row):
-                backtrack(board, row + 1, results)
-            board[row] = 0
-    results = []
-    board = [1] * 8
-    backtrack(board, 0, results)
-    return results
+        for val in range(1,9):
+            if val not in board and not hasDiagonal(board, col, val):
+                board[col] = val
+                find_solutions(board,col+1,results)
+                board[col] = -1
 
-print(chessQueenSorter(8))
+    board = [-1] * 8
+    find_solutions(board, 0, results)
+    
+    def queenSort(board):
+        for solution in results:
+
+
+print(chessQueenSorter())
