@@ -14,7 +14,7 @@ def checkPermutation(input1, input2):
 print(checkPermutation('eidbaooo', 'ab'))
 
 # https://www.codeproject.com/Articles/5260339/Recursion-and-Backtracking
-def chessQueenSorter():
+def chessQueenSorter(inputBoard):
     def hasDiagonal(board, col, value):
         #col -= 1
         for i in range(len(board)):
@@ -45,8 +45,23 @@ def chessQueenSorter():
     board = [-1] * 8
     find_solutions(board, 0, results)
     
-    def queenSort(board):
+    def queenSort(inputBoard):
+        best = {'moves': 8, 'board': [], 'totalSteps': 0}
         for solution in results:
+            moves = 0
+            totalSteps = 0
+            for i in range(8):
+                if inputBoard[i] != solution[i]:
+                    moves += 1
+                    totalSteps += abs(inputBoard[i] - solution[i])
+            if moves < best['moves']:
+                best = {'moves': moves, 'board': solution, 'totalSteps': totalSteps}
+            elif moves == best['moves']:
+                if totalSteps < best['totalSteps']:
+                    best = {'moves': moves, 'board': solution, 'totalSteps': totalSteps}
+        return best
+    
+    return queenSort(inputBoard)
 
-
-print(chessQueenSorter())
+board = [1, 1, 1, 1, 1, 1, 1, 1]
+print(chessQueenSorter(board))
