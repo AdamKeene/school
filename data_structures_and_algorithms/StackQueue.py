@@ -26,20 +26,21 @@ class Stack:
             if token.isdigit() or token.isnumeric():
                 output.append(token)
             elif token in precedence:
+                # pop while operator has precedence then push group
                 while (not self.is_empty() and self.peek() in precedence and precedence[self.peek()] >= precedence[token]):
                     output.append(self.pop())
                 self.push(token)
             else:
                 raise Exception('NaN')
-        
+        # pop remaining operators
         while not self.is_empty():
             output.append(self.pop())
-        
         return output
     
     def evaluate_postfix(self, expression):
         stack = Stack()
         for token in expression:
+            #push numbers, apply operators
             if token.isnumeric():
                 stack.push(int(token))
             else:
@@ -70,8 +71,10 @@ class Queue:
         self._front = 0
     
     def enqueue(self, e):
+        #double size if full
         if self._size == len(self._data):
-            self._resize(2 * len(self._data)) # double the array size
+            self._resize(2 * len(self._data))
+        #index of next available slot
         avail = (self._front + self._size) % len(self._data)
         self._data[avail] = e
         self._size += 1
@@ -97,14 +100,15 @@ class Queue:
     def is_empty(self):
         return self._size == 0
     
-    def _resize(self, cap): # we assume cap >= len(self)
-    #Resize to a new list of capacity >= len(self).
-        old = self._data # keep track of existing list 
-        self._data = [None] * cap # allocate list with new capacity
+    def _resize(self, cap):
+        #resize self._data
+        old = self._data 
+        self._data = [None] * cap
+        #walk through existing elements
         walk = self._front
-        for k in range(self._size): # only consider existing elements
-            self._data[k] = old[walk] # intentionally shift indices
-            walk = (1 + walk) % len(old) # use old size as modulus
+        for k in range(self._size):
+            self._data[k] = old[walk]
+            walk = (1 + walk) % len(old)
         self._front = 0
     
     def first(self):
@@ -141,3 +145,17 @@ class StackWithTwoQs:
     
     def size(self):
         return self.q1.size()
+    
+stack_with_two_qs = StackWithTwoQs()
+stack_with_two_qs.push(10)
+stack_with_two_qs.push(20)
+stack_with_two_qs.push(30)
+
+print("Stack size:", stack_with_two_qs.size())  # Output: Stack size: 3
+print("Top element:", stack_with_two_qs.peek())  # Output: Top element: 30
+
+print("Popped element:", stack_with_two_qs.pop())  # Output: Popped element: 30
+print("Popped element:", stack_with_two_qs.pop())  # Output: Popped element: 20
+
+print("Stack size:", stack_with_two_qs.size())  # Output: Stack size: 1
+print("Top element:", stack_with_two_qs.peek())  # Output: Top element: 10
