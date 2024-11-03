@@ -21,10 +21,12 @@ class Accounts:
         self._size = 0
 
     def addUser(self, name, predecessor, successor, address, ssn, initial_balance):
+        #get next available ID
         if not id_queue.is_empty():
             ID = id_queue.dequeue()
         else:
             ID = self._size
+        #create new node and link
         newest = self._Node(name, ID, predecessor, successor, address, ssn, initial_balance)
         predecessor._next = newest
         successor._prev = newest
@@ -38,8 +40,10 @@ class Accounts:
         current = self._head
         while current._id != ID:
             current = current._next
+        #link previous and next nodes
         current._prev._next = current._next
         current._next._prev = current._prev
+        #add ID to queue for reuse
         id_queue.enqueue(ID)
         self._size -= 1
         return current
@@ -60,14 +64,17 @@ class Accounts:
     
     def getMedianID(self):
         if self.is_empty():
-            raise Exception('Stack is empty')
+            raise Exception('Stack is empty')\
+        #find middle and first node
         count = self._size // 2
         current = self._head._next
+        #return middle node
         if self._size % 2 != 0:
             while count > 0:
                 current = current._next
                 count -= 1
             return current._id
+        #return average and first of two middle nodes in even sized stacks
         else:
             while count > 1:
                 current = current._next
@@ -150,15 +157,15 @@ class _id_queue:
 accounts = Accounts()
 id_queue = _id_queue()
 
-accounts.addUser(name='John Balls', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
-accounts.addUser(name='John Sack', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
-print("added users:", accounts._head._next._name, accounts._head._next._next._name)
+accounts.addUser(name='John Foo', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
+accounts.addUser(name='John Bar', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
+print("added users:", accounts._head._next._name, ',', accounts._head._next._next._name)
 accounts.payUserToUser(0, 1, 500)
 print("paid between users:", accounts._head._next._balance, accounts._head._next._next._balance)
 print("Median ID:",accounts.getMedianID())
 accounts.deleteUser(0)
-print("deleted user 0:", accounts._head._next._name, accounts._head._next._next._name)
+print("deleted user 0:", accounts._head._next._name, ',', accounts._head._next._next._name)
 print("ID queue:",id_queue.first())
-accounts.addUser(name='John Balls', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
+accounts.addUser(name='John Foo', predecessor=accounts._head, successor=accounts._head._next, address='123 Main St', ssn='123-45-6789', initial_balance=1000)
 accounts.mergeAccounts(0,1)
-print(accounts._head._next._name, accounts._head._next._next._name)
+print('Added and merged accounts:', accounts._head._next._name, accounts._head._next._balance, ',', accounts._head._next._next._name)

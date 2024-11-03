@@ -1,5 +1,4 @@
-for i in range(1,8):
-    print(i)
+print(8//3)
 class Node:
     def __init__(self, data, left=None, right=None):
         self._data = data

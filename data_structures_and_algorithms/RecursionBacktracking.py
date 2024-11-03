@@ -11,7 +11,7 @@ def checkPermutation(input1, input2):
                 if permscheck:
                     return True
 
-print(checkPermutation('eidbaooo', 'ab'))
+print('Has permutation:', checkPermutation('eidbaooo', 'ab'))
 
 # https://www.codeproject.com/Articles/5260339/Recursion-and-Backtracking
 def chessQueenSorter(inputBoard):
@@ -64,4 +64,4 @@ def chessQueenSorter(inputBoard):
     return queenSort(inputBoard)
 
 board = [1, 1, 1, 1, 1, 1, 1, 1]
-print(chessQueenSorter(board))
+print('moves:', chessQueenSorter(board)['moves'])
