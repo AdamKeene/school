@@ -118,34 +118,41 @@ with open('.\\data_structures_and_algorithms\\road_network.txt', 'r') as f:
         v = next(v for v in city_graph.vertices() if v.element() == line[1].strip())
         city_graph.insert_edge(u, v)
 
-print(city_graph.vertex_count())
-
 start_vertex = next(iter(city_graph.vertices()))
 discovered = {start_vertex: None}
 
-def DFS(graph, u, discovered):
+def DFS(graph, u, discovered, population = None):
     for e in graph.incident_edges(u):
         v = e.opposite(u)
         if v not in discovered:
             discovered[v] = e
-            DFS(graph, v, discovered)
+            if population:
+                population[0] += int(v.get_value())
+            DFS(graph, v, discovered, population)
 
-def find_archipelagos(graph):
+def find_archipelagos(graph, population=False):
     visited = set()
     archipelagos = 0
+    archipelago_population = []
     for v in graph.vertices():
         if v not in visited:
             discovered = {v: None}
-            DFS(graph, v, discovered)
+            if population:
+                population = [int(v.get_value())]
+                DFS(graph, v, discovered, population)
+                archipelago_population.append(population[0])
+            else:
+                DFS(graph, v, discovered)
             visited.update(discovered)
             archipelagos += 1
+    if population:
+        return archipelago_population
     return archipelagos
 
 archipelagos = find_archipelagos(city_graph)
 print("Archipelagos:", archipelagos)
-
-# for vertex in archipalegos:
-#     print(f"{vertex.element()}: population {vertex.get_value()}")
+archipelago_population = find_archipelagos(city_graph, population=True)
+print("Archipelago populations:", archipelago_population)
 
 discovered = {start_vertex: None}
 def BFS(graph, start_vertex):
@@ -182,13 +189,15 @@ def shortest_path(graph, start, goal):
         level = next_level
     return None
 
-# Example usage:
-start_vertex = next(v for v in city_graph.vertices() if v.element() == "Aliso Viejo")
-goal_vertex = next(v for v in city_graph.vertices() if v.element() == "Chicago")
-path = shortest_path(city_graph, start_vertex, goal_vertex)
-if path:
-    print("Shortest path:")
-    for vertex in path:
-        print(vertex.element())
-else:
-    print("No path found")
+def find_shortest_path(city_1, city_2):
+    start_vertex = next(v for v in city_graph.vertices() if v.element() == city_1)
+    goal_vertex = next(v for v in city_graph.vertices() if v.element() == city_2)
+    path = shortest_path(city_graph, start_vertex, goal_vertex)
+    if path:
+        return(f"Roads: {len(path) - 1}, Shortest path: {', '.join(vertex.element() for vertex in path)}")
+    else:
+        return("No path found")
+
+city_1 = 'Aliso Viejo'
+city_2 = 'Chicago'
+print(find_shortest_path(city_1, city_2))
