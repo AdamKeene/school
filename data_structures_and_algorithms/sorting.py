@@ -124,7 +124,6 @@ def heap_sort_anagrams(S):
 
 print(heap_sort_anagrams(strings))
 
-#587
 def radix_sort(S):
     sorted_strings = {}
     for string in S:

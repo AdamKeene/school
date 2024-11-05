@@ -97,14 +97,15 @@ class Queue:
     def is_empty(self):
         return self._size == 0
     
-    def _resize(self, cap): # we assume cap >= len(self)
-    #Resize to a new list of capacity >= len(self).
-        old = self._data # keep track of existing list 
-        self._data = [None] * cap # allocate list with new capacity
+    def _resize(self, cap):
+        #save data and resize the data object
+        old = self._data 
+        self._data = [None] * cap
+        #walk old data
         walk = self._front
-        for k in range(self._size): # only consider existing elements
-            self._data[k] = old[walk] # intentionally shift indices
-            walk = (1 + walk) % len(old) # use old size as modulus
+        for k in range(self._size):
+            self._data[k] = old[walk]
+            walk = (1 + walk) % len(old)
         self._front = 0
     
     def first(self):

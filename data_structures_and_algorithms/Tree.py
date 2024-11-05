@@ -91,6 +91,7 @@ class LinkedBinaryTree(BinaryTree):
         def __init__(self, container, node):
             self._container = container
             self._node = node
+            self._element = node._element
 
     def element(self):
       return self._node._element
@@ -140,6 +141,9 @@ class LinkedBinaryTree(BinaryTree):
         if node._right is not None:
             count += 1
         return count
+    
+    def _create_dict(self, e):
+        return {'ID': e[:6].strip(), 'name': e[7:31].strip(), 'department': e[32:35].strip(), 'program': e[36:39].strip(), 'year': e[40].strip()}
 
     def _add_root(self, e):
         if self._root is not None: raise ValueError('Root exists')
@@ -164,18 +168,17 @@ class LinkedBinaryTree(BinaryTree):
   
     def _insert(self, p, e): #TODO change data format
         if p is None:
-            return self._add_root(e)  # Add as root if tree is empty
-        
+            return self._add_root(e)  
         # Compare the last names
-        node_data = e.split()[0][7:]  # Extract student last name (this depends on input format)
-        current_name = p.element().split()[0][7:]
-        
-        if node_data.lower() < current_name.lower():  # Go left if name is alphabetically smaller
+        current_name = p._element['name']
+        # Go left if name is alphabetically earlier
+        if e['name'].lower() < current_name.lower():
             if self.left(p) is None:
                 return self._add_left(p, e)
             else:
                 return self._insert(self.left(p), e)
-        else:  # Go right if name is alphabetically larger or equal
+        # Go right if name is later
+        else:
             if self.right(p) is None:
                 return self._add_right(p, e)
             else:
@@ -184,15 +187,53 @@ class LinkedBinaryTree(BinaryTree):
     def _inorder_traversal(self, p, result):
         if self.left(p) is not None:
             self._inorder_traversal(self.left(p), result)
-        result.append(p.element())
+        result.append(p._element)
         if self.right(p) is not None:
             self._inorder_traversal(self.right(p), result)
+    
+    def _find_node(self, p, e):
+        if p is None:
+            return None
+        if p._element['ID'] == e:
+            return p
+        left = self._find_node(self.left(p), e)
+        right = self._find_node(self.right(p), e)
+        if left is not None:
+            return left
+        if right is not None:
+            return right
+        return None
+
+    def _delete(self, p):
+        node = self._validate(p)
+        if self.num_children(p) == 2:
+            raise ValueError('p has two children')
+        child = node._left if node._left else node._right
+        if child is not None:
+            child._parent = node._parent
+        if node is self._root:
+            self._root = child
+        else:
+            parent = node._parent
+            if node is parent._left:
+                parent._left = child
+            else:
+                parent._right = child
+        self._size -= 1
+        node._parent = node
+        return node._element
 
     def print_inorder(self):
         result = []
         if not self.is_empty():
             self._inorder_traversal(self.root(), result)
-        print("\n".join(result))
+        print("\n".join(str(item) for item in result))
+    
+    def return_inorder(self):
+        result = []
+        if not self.is_empty():
+            self._inorder_traversal(self.root(), result)
+        return("\n".join(str(result)))
 
     def print_breadthfirst(self):
         if not self.is_empty():
@@ -200,9 +241,21 @@ class LinkedBinaryTree(BinaryTree):
             fringe.enqueue(self.root())
             while not fringe.is_empty():
                 p = fringe.dequeue()
-                print(p.element())
+                print(p._element)
                 for c in self.children(p):
                     fringe.enqueue(c)
+
+    def return_breadthfirst(self):
+        if not self.is_empty():
+            fringe = Queue()
+            fringe.enqueue(self.root())
+            result = []
+            while not fringe.is_empty():
+                p = fringe.dequeue()
+                result.append(p._element)
+                for c in self.children(p):
+                    fringe.enqueue(c)
+            return('\n'.join(str(result)))
 
         
 def load_file(file):
@@ -213,17 +266,29 @@ def load_file(file):
             line = line.strip()
             if line == '' or line[0] not in {'I', 'D'}:
                 continue
-            
-            record = line[1:].strip()  # Remove the operation code
-            if line[0] == 'I':  # Insert operation
+            record = line[1:].strip()
+            if line[0] == 'I':
+                record = tree._create_dict(record)
                 if tree.is_empty():
                     tree._add_root(record)
                 else:
                     tree._insert(tree.root(), record)
-            # You would add the delete logic for 'D' operation here
+            if line[0] == 'D':
+                node = tree._find_node(tree.root(), tree._create_dict(record)['ID'])
+                if node is not None:
+                    deletedElement = node._element
+                    tree._delete(node)
+                    print('Deleted:', deletedElement['name'])
+                else:
+                    print("coundn't find it :/")
+
     tree.print_inorder()
     print('-')
-    tree._breadthfirst()
+    tree.print_breadthfirst()
+    with open('inorder.txt', 'w') as out_file:
+        out_file.write(str(tree.return_inorder()))
+    with open('breadthfirst.txt', 'w') as out_file:
+        out_file.write(str(tree.return_breadthfirst()))
     return tree
 
-balls = load_file('tree-input.txt')
+balls = load_file('data_structures_and_algorithms\\tree-input.txt')
