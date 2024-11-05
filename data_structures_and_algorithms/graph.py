@@ -1,4 +1,4 @@
-from heap import HeapBuilder
+from Heap import HeapBuilder
 
 class Vertex:
     __slots__ = '_element', '_value'

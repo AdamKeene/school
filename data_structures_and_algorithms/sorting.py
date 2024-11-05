@@ -1,5 +1,5 @@
 from StackQueue import Queue
-from heap import HeapBuilder
+from Heap import HeapBuilder
 
 strings = ["bucket","rat","mango","tango","ogtan","tar"]
 
