@@ -1,35 +1,32 @@
-permcount = 0
-def checkPermutation(input1, input2):
-    for i in range(len(input1)):
-        if input1[i] in input2:
-            newinput2 = input2.replace(input1[i], '', 1)
-            newinput1 = input1[i+1:i+1+len(newinput2)]
-            if len(newinput2) == 0:
-                return True
-            else:
-                permscheck = checkPermutation(newinput1, newinput2)
-                if permscheck:
-                    return True
+def find_permutations(s):
+    if len(s) == 1:
+        return [s]
+    perms = []
+    for i, char in enumerate(s):
+        for perm in find_permutations(s[:i] + s[i+1:]):
+            perms.append(char + perm)
+    return perms
 
-print('Has permutation:', checkPermutation('eidbaooo', 'ab'))
+def check_permutation_in_string(small, large):
+    permutations = find_permutations(small)
+    for perm in permutations:
+        if perm in large:
+            return True
+    return False
 
-# https://www.codeproject.com/Articles/5260339/Recursion-and-Backtracking
+# Example usage
+small_string = "ab"
+large_string = "eidbaooo"
+print('Has permutation:', check_permutation_in_string(small_string, large_string))
+
 def chessQueenSorter(inputBoard):
     def hasDiagonal(board, col, value):
-        #col -= 1
         for i in range(len(board)):
             if i == col or board[i] == -1:
                 continue
             if abs(board[i] - value) == abs(i - col):
                 return True
         return False
-    
-    def get_candidates(board):
-        candidates = []
-        for i in range(1, 9):
-            if i not in board:
-                candidates.append(i)
-        return candidates
 
     results = []
     def find_solutions(board, col, results):

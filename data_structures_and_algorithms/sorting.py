@@ -4,32 +4,31 @@ from Heap import HeapBuilder
 strings = ["bucket","rat","mango","tango","ogtan","tar"]
 
 def merge(S1, S2, S):
-    """Merge two sorted Python lists S1 and S2 into properly sized list S."""
     i = j = 0
     while i + j < len(S):
+        # if S1 is empty or S1[i] < S2[j]
         if j == len(S2) or (i < len(S1) and S1[i] < S2[j]):
-            S[i+j] = S1[i]  # copy ith element of S1 as next item of S
+            S[i+j] = S1[i]
             i += 1
         else:
-            S[i+j] = S2[j]  # copy jth element of S2 as next item of S
+            S[i+j] = S2[j]
             j += 1
 # O(n1 + n2) time
 
 def merge_sort(S):
-    """Sort the elements of Python list S using the merge-sort algorithm."""
     n = len(S)
     new_list = S.copy()
+    # if list is sorted
     if n < 2:
-        return  # list is already sorted
-    # divide
+        return
+    # divide and conquer with recursion 
     mid = n // 2
-    S1 = new_list[0:mid]  # copy of first half
-    S2 = new_list[mid:n]  # copy of second half
-    # conquer (with recursion)
-    merge_sort(S1)  # sort copy of first half
-    merge_sort(S2)  # sort copy of second half
+    S1 = new_list[0:mid]
+    S2 = new_list[mid:n]
+    merge_sort(S1)
+    merge_sort(S2)
     # merge results
-    merge(S1, S2, S)  # merge sorted halves back into S
+    merge(S1, S2, S)
 
 # O(n log n) time
 
@@ -46,28 +45,28 @@ def merge_sort_anagrams(S):
     anagram_list = list(sorted_strings.values())
     return anagram_list
 
-print(merge_sort_anagrams(strings))
+print('merge sort:', merge_sort_anagrams(strings))
 
 def quick_sort(S):
-    """Sort the elements of Python list S using the quick-sort algorithm."""
     n = S.size()
+    # if sorted
     if n < 2:
-        return  # list is already sorted
+        return
     # divide
-    p = S.first()  # using first as arbitrary pivot
+    p = S.first()
     L = Queue()
     E = Queue()
     G = Queue()
-    while not S.is_empty():  # divide S into L, E, and G
+    while not S.is_empty():
         if S.first() < p:
             L.enqueue(S.dequeue())
         elif p < S.first():
             G.enqueue(S.dequeue())
-        else:  # S.first() must be equal to p
+        else:
             E.enqueue(S.dequeue())
     # conquer (with recursion)
-    quick_sort(L)  # sort elements less than p
-    quick_sort(G)  # sort elements greater than p
+    quick_sort(L)
+    quick_sort(G)
     # concatenate results
     sorted_list = []
     while not L.is_empty():
@@ -100,7 +99,7 @@ def quick_sort_anagrams(S):
     anagram_list = list(sorted_strings.values())
     return anagram_list
 
-print(quick_sort_anagrams(strings))
+print('quick sort:', quick_sort_anagrams(strings))
 
 def heap_sort(arr):
     heap = HeapBuilder()
@@ -108,7 +107,7 @@ def heap_sort(arr):
     sorted_arr = []
     while len(heap) > 0:
         max_item = heap.remove_max()
-        sorted_arr.insert(0, max_item[0])  # Insert at the beginning to maintain sorted order
+        sorted_arr.insert(0, max_item[0])
     return sorted_arr
 
 def heap_sort_anagrams(S):
@@ -122,7 +121,7 @@ def heap_sort_anagrams(S):
     anagram_list = list(sorted_strings.values())
     return anagram_list
 
-print(heap_sort_anagrams(strings))
+print('heap sort:', heap_sort_anagrams(strings))
 
 def radix_sort(S):
     sorted_strings = {}
@@ -137,3 +136,5 @@ def radix_sort(S):
             sorted_strings[str(sorted_string)] = [string]
     anagram_list = list(sorted_strings.values())
     return anagram_list
+
+print('radix sort:', radix_sort(strings))

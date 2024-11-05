@@ -1,3 +1,5 @@
+from Tree import LinkedBinaryTree
+
 class Node:
     def __init__(self, data, left=None, right=None):
         self._data = data
@@ -125,3 +127,39 @@ maxsack = heap.create_max_heap(balls)
 print(maxsack)
 minsack = heap.create_min_heap(balls)
 print(minsack)
+    
+class BSTToHeapTransformer(HeapBuilder):
+    def __init__(self, tree):
+        self.tree = tree
+        self._data = []
+        self._create_min_heap()
+
+    def _collect_elements(self, node):
+        if node is not None:
+            self._collect_elements(self.tree.left(node))
+            self._data.append(self._Item(node._element['ID'], node._element))
+            self._collect_elements(self.tree.right(node))  
+
+    def _create_min_heap(self):
+        self._collect_elements(self.tree.root())
+        return self.create_min_heap(self._data)
+
+    def get_heap(self):
+        return [item._key for item in self._data]
+    
+BSTToHeapTransformer(LinkedBinaryTree())
+
+tree = LinkedBinaryTree()
+root = tree._add_root({'ID': 10, 'Name': 'Root'})
+left = tree._add_left(root, {'ID': 5, 'Name': 'Left'})
+right = tree._add_right(root, {'ID': 15, 'Name': 'Right'})
+leftleft = tree._add_left(left, {'ID': 2, 'Name': 'LeftLeft'})
+leftright = tree._add_right(left, {'ID': 7, 'Name': 'LeftRight'})
+rightright = tree._add_right(right, {'ID': 20, 'Name': 'RightRight'})
+
+# Transform the BST to a heap
+transformer = BSTToHeapTransformer(tree)
+heap = transformer.create_min_heap(transformer._data)
+
+# Print the resulting heap
+print("Heap:", heap)

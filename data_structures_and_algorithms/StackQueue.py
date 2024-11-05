@@ -154,11 +154,11 @@ stack_with_two_qs.push(10)
 stack_with_two_qs.push(20)
 stack_with_two_qs.push(30)
 
-print("Stack size:", stack_with_two_qs.size())  # Output: Stack size: 3
-print("Top element:", stack_with_two_qs.peek())  # Output: Top element: 30
+print("Stack size:", stack_with_two_qs.size()) 
+print("Top element:", stack_with_two_qs.peek())
 
-print("Popped element:", stack_with_two_qs.pop())  # Output: Popped element: 30
-print("Popped element:", stack_with_two_qs.pop())  # Output: Popped element: 20
+print("Popped element:", stack_with_two_qs.pop())
+print("Popped element:", stack_with_two_qs.pop())
 
-print("Stack size:", stack_with_two_qs.size())  # Output: Stack size: 1
-print("Top element:", stack_with_two_qs.peek())  # Output: Top element: 10
+print("Stack size:", stack_with_two_qs.size())
+print("Top element:", stack_with_two_qs.peek())
