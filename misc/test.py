@@ -1,4 +1,10 @@
-print(8//3)
+list = 'balls'
+p = 2
+print(list[1:])
+for i in range(len(list)):
+    first = i-p if i-p >= 0 else 0
+    print(list[first:p+i])
+    """
 class Node:
     def __init__(self, data, left=None, right=None):
         self._data = data
@@ -260,3 +266,4 @@ for vertex in archipalegos:
 #                     next_level.append(v)
 #         level = next_level
 # print(BFS(city_graph, start_vertex, discovered))
+"""

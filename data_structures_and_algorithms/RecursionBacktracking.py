@@ -1,23 +1,42 @@
-def find_permutations(s):
-    if len(s) == 1:
-        return [s]
-    perms = []
-    for i, char in enumerate(s):
-        for perm in find_permutations(s[:i] + s[i+1:]):
-            perms.append(char + perm)
-    return perms
+# def find_permutations(s):
+#     if len(s) == 1:
+#         return [s]
+#     perms = []
+#     for i, char in enumerate(s):
+#         for perm in find_permutations(s[:i] + s[i+1:]):
+#             perms.append(char + perm)
+#     return perms
 
-def check_permutation_in_string(small, large):
-    permutations = find_permutations(small)
-    for perm in permutations:
-        if perm in large:
-            return True
+# def check_permutation_in_string(small, large):
+#     permutations = find_permutations(small)
+#     for perm in permutations:
+#         if perm in large:
+#             return True
+#     return False
+
+def find_permutations(string, input_string):
+    for i in range(len(string)):
+        if string[i] == input_string[0]:
+            size = len(input_string)
+            first = i-size if i-size >= 0 else 0
+            if check_permutations(string[first:i+size], input_string[1:]) == True:
+                return True
     return False
 
-# Example usage
+def check_permutations(string, input_string):
+    if input_string == '':
+        return True
+    for i in range(len(string)):
+        if string[i] == input_string[0]:
+            size = len(input_string)-1
+            first = i-size if i-size >= 0 else 0
+            if check_permutations(string[first:i+size], input_string[1:]) == True:
+                return True
+    return False
+
 small_string = "ab"
 large_string = "eidbaooo"
-print('Has permutation:', check_permutation_in_string(small_string, large_string))
+print('Has permutation:', find_permutations(large_string, small_string))
 
 def chessQueenSorter(inputBoard):
     def hasDiagonal(board, col, value):
@@ -30,6 +49,7 @@ def chessQueenSorter(inputBoard):
 
     results = []
     def find_solutions(board, col, results):
+        # recursively find all solutions
         if col == 8:
             results.append(board[:])
             return
@@ -43,6 +63,7 @@ def chessQueenSorter(inputBoard):
     find_solutions(board, 0, results)
     
     def queenSort(inputBoard):
+        # find the best solution
         best = {'moves': 8, 'board': [], 'totalSteps': 0}
         for solution in results:
             moves = 0
