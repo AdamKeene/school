@@ -105,7 +105,7 @@ class UnsortedTableMap:
             self._value = value
 
     def __init__(self):
-        self._table = []  # List of _Item objects
+        self._table = []
 
     def __getitem__(self, key):
         # Look for the key in the table and return its value
@@ -118,15 +118,15 @@ class UnsortedTableMap:
         # Check if key exists, update its value if found, otherwise append new key-value pair
         for item in self._table:
             if key == item._key:
-                item._value = value  # Update value
+                item._value = value
                 return
-        self._table.append(self._Item(key, value))  # Add new item
+        self._table.append(self._Item(key, value))
 
     def __delitem__(self, key):
         # Look for the key in the table and remove the item
         for j in range(len(self._table)):
             if key == self._table[j]._key:
-                self._table.pop(j)  # Remove the item
+                self._table.pop(j)
                 return
         raise KeyError("Key Error: " + repr(key))
     
@@ -143,7 +143,7 @@ class UnsortedTableMap:
 
 p = find_p(10)
 hashh = Hash()
-chainhash = ChainHashMap() #cap 10 lol
+chainhash = ChainHashMap()
 print(hashh._hash("hello"))
 print(chainhash._hash("hello"))
 chainhash["hello"] ='world'
@@ -155,7 +155,7 @@ with open("pride-and-prejudice.txt", "r") as file:
     for line in file:
         words = re.findall(r'\b\w+\b', line)
         for word in words:
-            sorted_word = ''.join(sorted(word.lower()))  # Normalize case
+            sorted_word = ''.join(sorted(word.lower()))
             try:
                 chainhash[sorted_word].append(word)
             except KeyError:

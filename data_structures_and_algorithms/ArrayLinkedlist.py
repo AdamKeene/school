@@ -135,7 +135,8 @@ class _id_queue:
             raise Exception('Queue is empty')
         return self._head._id
     
-    def enqueue(self, ID): #add to end of queue
+    def enqueue(self, ID): 
+        #add to end of queue
         newest = self._Node(ID, None)
         if self.is_empty():
             self._head = newest
@@ -144,7 +145,8 @@ class _id_queue:
         self._tail = newest
         self._size += 1
 
-    def dequeue(self): #return and remove from start of queue
+    def dequeue(self): 
+        #return and remove from start of queue
         if self.is_empty():
             raise Exception('Queue is empty')
         answer = self._head._id

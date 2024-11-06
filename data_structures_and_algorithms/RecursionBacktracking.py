@@ -1,19 +1,3 @@
-# def find_permutations(s):
-#     if len(s) == 1:
-#         return [s]
-#     perms = []
-#     for i, char in enumerate(s):
-#         for perm in find_permutations(s[:i] + s[i+1:]):
-#             perms.append(char + perm)
-#     return perms
-
-# def check_permutation_in_string(small, large):
-#     permutations = find_permutations(small)
-#     for perm in permutations:
-#         if perm in large:
-#             return True
-#     return False
-
 def find_permutations(string, input_string):
     for i in range(len(string)):
         if string[i] == input_string[0]:

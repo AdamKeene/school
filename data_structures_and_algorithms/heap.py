@@ -161,5 +161,4 @@ rightright = tree._add_right(right, {'ID': 20, 'Name': 'RightRight'})
 transformer = BSTToHeapTransformer(tree)
 heap = transformer.create_min_heap(transformer._data)
 
-# Print the resulting heap
 print("Heap:", heap)

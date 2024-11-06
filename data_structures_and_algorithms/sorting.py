@@ -13,7 +13,6 @@ def merge(S1, S2, S):
         else:
             S[i+j] = S2[j]
             j += 1
-# O(n1 + n2) time
 
 def merge_sort(S):
     n = len(S)
@@ -29,8 +28,6 @@ def merge_sort(S):
     merge_sort(S2)
     # merge results
     merge(S1, S2, S)
-
-# O(n log n) time
 
 def merge_sort_anagrams(S):
     sorted_strings = {}
@@ -78,7 +75,6 @@ def quick_sort(S):
     while not G.is_empty():
         sorted_list.append(G.first())
         S.enqueue(G.dequeue())
-# O(n^2) time
 
 def quick_sort_anagrams(S):
     sorted_strings = {}
