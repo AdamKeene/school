@@ -1,27 +1,35 @@
-example1 = [4,9,10,13,17,17,19,21]
+example1 = [4,9,10,13,17,17,17,19,21]
 target1 = 17
 example2 = [2,4,6,8,10,14,16]
 target2 = 12
 example3 = []
 target = 0
 
-def find_first_last(arr, target):
-    left = 0
-    right = len(arr) - 1
-    while left <= right:
-        mid = left + (right - left) // 2
-        if arr[mid] == target:
-            if arr[mid - 1] == target:
-                return [mid - 1, mid]
-            elif arr[mid + 1] == target:
-                return [mid, mid + 1]
+def find_first_last(nums, target):
+    if not nums:
+        return [-1, -1]
+    def binary_search_left(nums, target):
+        left = 0
+        right = len(nums) - 1
+        while left < right:
+            # pick a midpoint and check if it is less than the target
+            mid = left + (right - left) // 2
+            if nums[mid] < target:
+                left = mid + 1
             else:
-                return[mid, mid]
-        elif arr[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return [-1, -1]
+                right = mid
+        return left if nums[left] == target else -1
+    def binary_search_right(nums, target):
+        left, right = 0, len(nums) - 1
+        while left < right:
+            mid = left + (right - left) // 2 + 1
+            if nums[mid] > target:
+                right = mid - 1
+            else:
+                left = mid
+        return left if nums[left] == target else -1
+    return [binary_search_left(nums, target), binary_search_right(nums, target)]
+    
 
 print(example1, '->', find_first_last(example1, target1))
 print(example2, '->', find_first_last(example2, target2))
