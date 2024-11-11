@@ -27,7 +27,7 @@ def find_first_last(nums, target):
                 right = mid - 1
             else:
                 left = mid
-        return left if nums[left] == target else -1
+        return right if nums[right] == target else -1
     return [binary_search_left(nums, target), binary_search_right(nums, target)]
     
 
