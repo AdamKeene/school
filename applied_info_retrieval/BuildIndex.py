@@ -1,5 +1,6 @@
+import sys, os
+from TextTransformation import process_text
 from random import randrange
-import re
 
 class Hash:
     def __init__(self, cap=11, p=109345121):
@@ -27,10 +28,12 @@ class Hash:
         j = self._hash(key)
         return self._bucket_contains(j, key)
     
-    def add(self, key):
+    def add(self, key, value):
         j = self._hash(key)
         if not self._bucket_contains(j, key):
-            self._bucket_add(j, key)
+            self._bucket_add(j, key, value)
+        else:
+            self._bucket_update(j, key, value)
         if self._n > len(self._table) // 2:
             self._resize(2 * len(self._table) - 1)
 
@@ -48,7 +51,6 @@ class Hash:
     
     def _size(self):
         return len(self._table)
-
 class ChainHashMap(Hash):
     def _bucket_contains(self, j, key):
         bucket = self._table[j]
@@ -56,13 +58,15 @@ class ChainHashMap(Hash):
             return False
         return key in bucket
     
-    def _bucket_add(self, j, key):
-        if self._table[j] is None:
-            self._table[j] = set()
-        bucket = self._table[j]
-        if key not in bucket:
-            bucket.add(key)
-            self._n += 1
+    def _bucket_add(self, j, key, value):
+        self._table[j].append((key, value))
+        self._n += 1
+
+    def _bucket_update(self, j, key, value):
+        for i, (k, v) in enumerate(self._table[j]):
+            if k == key:
+                self._table[j][i] = (key, value)
+                break
     
     def _bucket_remove(self, j, key):
         bucket = self._table[j]
@@ -97,27 +101,17 @@ class ChainHashMap(Hash):
                     string += key + "\n"
         return string
 
-p = 109345121
-chainhashtest = ChainHashMap(cap=10, p=p)
-
-print('hello hash:', chainhashtest._hash("hello"))
-
-chainhashtest.add("hash")
-chainhashtest.add("table")
-print("hash table:", chainhashtest._table)
-
-def find_anagrams(text):
-    #read file
+def build_index(docs):
     chainhash = ChainHashMap()
-    with open(text, "r") as file:
-        for line in file:
-            words = re.findall(r'\b\w+\b', line)
-            #sort letters and add to hash table
-            for word in words:
-                sorted_word = ''.join(sorted(word.lower()))
-                j = chainhash._hash(sorted_word)
-                if not chainhash._bucket_contains(j, sorted_word):
-                    chainhash.add(sorted_word)
-    return f"number of anagram roots: {chainhash.count_items()}"
+    docnum = 1
+    for text in docs:
+        filepath = process_text(text, 'temp')
+        pos = 1
+        with open(filepath, 'r') as f:
+            text = f.read()
+            for word in text.split():
+                chainhash.add(word, (docnum, pos))
+                pos += 1
+        docnum += 1
+    return chainhash
 
-print(find_anagrams("data_structures_and_algorithms\pride-and-prejudice.txt"))

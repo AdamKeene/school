@@ -36,5 +36,6 @@ def process_text(inputPath, outputPath):
     with zipfile.ZipFile(output_zip_path, 'w') as zipf:
         zipf.write(output_file, os.path.basename(output_file))
     os.remove(output_file)
+    return output_zip_path
 
 process_text(inputPath, outputPath)
