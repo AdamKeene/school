@@ -1,6 +1,6 @@
-import sys, os
 from TextTransformation import process_text
 from random import randrange
+import tempfile
 
 class Hash:
     def __init__(self, cap=11, p=109345121):
@@ -29,11 +29,14 @@ class Hash:
         return self._bucket_contains(j, key)
     
     def add(self, key, value):
-        j = self._hash(key)
-        if not self._bucket_contains(j, key):
-            self._bucket_add(j, key, value)
+        index = self._hash(key)
+        if self._table[index] is None:
+            balls = self._table[index]
+            self._table[index] = []
+        if not self._bucket_contains(index, key):
+            self._bucket_add(index, key, value)
         else:
-            self._bucket_update(j, key, value)
+            self._bucket_update(index, key, value)
         if self._n > len(self._table) // 2:
             self._resize(2 * len(self._table) - 1)
 
@@ -46,26 +49,30 @@ class Hash:
         old = list(self.items())
         self._table = [None] * new_size
         self._n = 0
-        for key in old:
-            self.add(key)
+        for bucket in old:
+            self.add(bucket[0], bucket[1])
     
     def _size(self):
         return len(self._table)
 class ChainHashMap(Hash):
     def _bucket_contains(self, j, key):
         bucket = self._table[j]
-        if bucket is None:
-            return False
-        return key in bucket
+        if bucket is not None:
+            for k, v in bucket:
+                if k == key:
+                    return True
+        return False
     
     def _bucket_add(self, j, key, value):
-        self._table[j].append((key, value))
+        if self._table[j] is None:
+            self._table[j] = []
+        self._table[j].append((key, [value]))
         self._n += 1
 
-    def _bucket_update(self, j, key, value):
-        for i, (k, v) in enumerate(self._table[j]):
+    def _bucket_update(self, index, key, value):
+        for i, (k, v) in enumerate(self._table[index]):
             if k == key:
-                self._table[j][i] = (key, value)
+                v.append(value)
                 break
     
     def _bucket_remove(self, j, key):
@@ -77,14 +84,12 @@ class ChainHashMap(Hash):
     def __iter__(self):
         for bucket in self._table:
             if bucket is not None:
-                for key in bucket:
-                    yield key
+                yield from bucket
     
     def items(self):
         for bucket in self._table:
             if bucket is not None:
-                for key in bucket:
-                    yield key
+                yield from bucket
 
     def count_items(self):
         count = 0
@@ -100,18 +105,27 @@ class ChainHashMap(Hash):
                 for key in bucket:
                     string += key + "\n"
         return string
+    
+    def print_items(self):
+        for item in self.items():
+            print(str(item))
 
 def build_index(docs):
     chainhash = ChainHashMap()
     docnum = 1
     for text in docs:
-        filepath = process_text(text, 'temp')
-        pos = 1
-        with open(filepath, 'r') as f:
-            text = f.read()
-            for word in text.split():
-                chainhash.add(word, (docnum, pos))
-                pos += 1
-        docnum += 1
+        with tempfile.TemporaryDirectory() as temp_dir:
+            filepath = process_text(text, temp_dir)
+            pos = 1
+            with open(filepath, 'r', errors='ignore') as f:
+                text = f.read()
+                for word in text.split():
+                    chainhash.add(word, (docnum, pos))
+                    pos += 1
+            docnum += 1
     return chainhash
 
+path = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
+chainhash = build_index([path])
+print(chainhash.count_items())
+print(chainhash.print_items())
