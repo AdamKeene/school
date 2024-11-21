@@ -22,10 +22,8 @@ def process_text(inputPath, outputPath):
     #process text
     output_text = ''
     for token in doc:
-        if not token.is_stop:
-            if token.pos_ != 'PUNCT':
-                output_text += ' '
-            output_text += stemmer.stem(token.text)
+        if not token.is_stop and token.is_alpha:
+            output_text += stemmer.stem(token.text) + ' '
     output_text = output_text.strip()
 
     #create output file

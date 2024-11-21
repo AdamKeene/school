@@ -34,11 +34,19 @@ class Hash:
             balls = self._table[index]
             self._table[index] = []
         if not self._bucket_contains(index, key):
+            balls = self._table[index]
             self._bucket_add(index, key, value)
         else:
             self._bucket_update(index, key, value)
         if self._n > len(self._table) // 2:
             self._resize(2 * len(self._table) - 1)
+
+    def add_bucket(self, key, values):
+            index = self._hash(key)
+            if self._table[index] is None:
+                self._table[index] = []
+            self._table[index].append((key, values))
+            self._n += len(values)
 
     def remove(self, key):
         j = self._hash(key)
@@ -49,8 +57,8 @@ class Hash:
         old = list(self.items())
         self._table = [None] * new_size
         self._n = 0
-        for bucket in old:
-            self.add(bucket[0], bucket[1])
+        for key, values in old:
+            self.add_bucket(key, values)
     
     def _size(self):
         return len(self._table)
@@ -66,7 +74,10 @@ class ChainHashMap(Hash):
     def _bucket_add(self, j, key, value):
         if self._table[j] is None:
             self._table[j] = []
+        balls = self._table[j]
         self._table[j].append((key, [value]))
+        balls = self._table[j][0]
+        sack = self._table[j][0][1][0]
         self._n += 1
 
     def _bucket_update(self, index, key, value):
@@ -89,7 +100,8 @@ class ChainHashMap(Hash):
     def items(self):
         for bucket in self._table:
             if bucket is not None:
-                yield from bucket
+                for key, value in bucket:
+                    yield key, value
 
     def count_items(self):
         count = 0
@@ -110,9 +122,15 @@ class ChainHashMap(Hash):
         for item in self.items():
             print(str(item))
 
+
+
 def build_index(docs):
-    chainhash = ChainHashMap()
+    chunk_max = 5 * 1024 * 1024
     docnum = 1
+    shard_index = 0
+    chunk_size = 0
+    shards = [ChainHashMap()]
+
     for text in docs:
         with tempfile.TemporaryDirectory() as temp_dir:
             filepath = process_text(text, temp_dir)
@@ -120,12 +138,40 @@ def build_index(docs):
             with open(filepath, 'r', errors='ignore') as f:
                 text = f.read()
                 for word in text.split():
-                    chainhash.add(word, (docnum, pos))
+                    chunk_size += len(word) + len(str(docnum)) + len(str(pos)) + 3
+                    if chunk_size > chunk_max:
+                        shard_index += 1
+                        shards.append(ChainHashMap())
+                        chunk_size = 0
+                    shards[shard_index].add(word, (docnum, pos))
                     pos += 1
+                    
             docnum += 1
-    return chainhash
+    #merge shards
+    index = ChainHashMap()
+    for shard in shards:
+        for key, value in shard.items():
+            if key in index:
+                index._bucket_update(index._hash(key), key, value)
+            else:
+                index.add_bucket(key, value)
+    return index
 
 path = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
-chainhash = build_index([path])
-print(chainhash.count_items())
-print(chainhash.print_items())
+path2 = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'
+chainhash = build_index([path, path2])
+
+inv_index_path = "C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt"
+def write_index_to_file(index):
+    with open(inv_index_path, 'w') as file:
+        for key, values in index.items():
+            doc_nums = {}
+            for doc_id, pos in values:
+                if doc_id not in doc_nums:
+                    doc_nums[doc_id] = []
+                doc_nums[doc_id].append(pos)
+            positions_str = '; '.join(f"{doc_id}:{len(pos_list)}:{','.join(map(str, pos_list))}" for doc_id, pos_list in doc_nums.items())
+            file.write(f"{key} {positions_str}\n")
+
+output_filename = 'index_output.txt'
+write_index_to_file(chainhash)
