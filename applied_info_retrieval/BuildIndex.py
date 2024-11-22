@@ -28,6 +28,18 @@ class Hash:
         j = self._hash(key)
         return self._bucket_contains(j, key)
     
+    def get(self, key):
+        j = self._hash(key)
+        try:
+            result = self._table[j]
+            for i in result:
+                if i[0] == key:
+                    return i
+            print("Key not found")
+            return None
+        except:
+            return None
+    
     def add(self, key, value):
         index = self._hash(key)
         if self._table[index] is None:
@@ -47,11 +59,6 @@ class Hash:
                 self._table[index] = []
             self._table[index].append((key, values))
             self._n += len(values)
-
-    def remove(self, key):
-        j = self._hash(key)
-        self._bucket_remove(j, key)
-        self._n -= 1
     
     def _resize(self, new_size):
         old = list(self.items())
@@ -86,12 +93,6 @@ class ChainHashMap(Hash):
                 v.append(value)
                 break
     
-    def _bucket_remove(self, j, key):
-        bucket = self._table[j]
-        if bucket is None or key not in bucket:
-            raise KeyError("Key Error: " + repr(key))
-        bucket.remove(key)
-    
     def __iter__(self):
         for bucket in self._table:
             if bucket is not None:
@@ -115,7 +116,7 @@ class ChainHashMap(Hash):
         for bucket in self._table:
             if bucket is not None:
                 for key in bucket:
-                    string += key + "\n"
+                    string += str(key) + "\n"
         return string
     
     def print_items(self):
@@ -135,6 +136,7 @@ def build_index(docs):
         with tempfile.TemporaryDirectory() as temp_dir:
             filepath = process_text(text, temp_dir)
             pos = 1
+            print(f'reading doc {docnum}')
             with open(filepath, 'r', errors='ignore') as f:
                 text = f.read()
                 for word in text.split():
@@ -155,14 +157,15 @@ def build_index(docs):
                 index._bucket_update(index._hash(key), key, value)
             else:
                 index.add_bucket(key, value)
-    return index
+    path = write_index_to_file(index)
+    return path
 
-path = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
-path2 = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'
-chainhash = build_index([path, path2])
+# path = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
+# path2 = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'
+# chainhash = build_index([path, path2])
 
-inv_index_path = "C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt"
 def write_index_to_file(index):
+    inv_index_path = "C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt"
     with open(inv_index_path, 'w') as file:
         for key, values in index.items():
             doc_nums = {}
@@ -170,8 +173,9 @@ def write_index_to_file(index):
                 if doc_id not in doc_nums:
                     doc_nums[doc_id] = []
                 doc_nums[doc_id].append(pos)
-            positions_str = '; '.join(f"{doc_id}:{len(pos_list)}:{','.join(map(str, pos_list))}" for doc_id, pos_list in doc_nums.items())
+            positions_str = ';'.join(f"{doc_id}:{len(pos_list)}:{','.join(map(str, pos_list))}" for doc_id, pos_list in doc_nums.items())
             file.write(f"{key} {positions_str}\n")
+    return inv_index_path
 
-output_filename = 'index_output.txt'
-write_index_to_file(chainhash)
+# output_filename = 'index_output.txt'
+# write_index_to_file(chainhash)

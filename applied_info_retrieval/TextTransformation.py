@@ -4,6 +4,7 @@ from nltk.stem import PorterStemmer
 inputPath = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
 outputPath = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-transform'
 
+nlp = spacy.load('en_core_web_sm')
 def process_text(inputPath, outputPath):
     #get input file
     if inputPath.endswith('.zip'):
@@ -15,7 +16,6 @@ def process_text(inputPath, outputPath):
     with open(f, 'r') as f:
         exampleIn = f.read()
 
-    nlp = spacy.load('en_core_web_sm')
     stemmer = PorterStemmer()
     doc = nlp(exampleIn)
 
