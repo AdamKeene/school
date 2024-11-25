@@ -5,6 +5,7 @@ inputPath = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\alep
 outputPath = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-transform'
 
 nlp = spacy.load('en_core_web_sm')
+stemmer = PorterStemmer()
 def process_text(inputPath, outputPath):
     #get input file
     if inputPath.endswith('.zip'):
@@ -16,7 +17,6 @@ def process_text(inputPath, outputPath):
     with open(f, 'r') as f:
         exampleIn = f.read()
 
-    stemmer = PorterStemmer()
     doc = nlp(exampleIn)
 
     #process text

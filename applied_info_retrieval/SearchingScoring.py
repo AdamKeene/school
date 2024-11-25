@@ -4,6 +4,47 @@ from BuildIndex import build_index, ChainHashMap
 
 partial_scores = {}
 positions = {}
+
+def cosine(d, q):
+    dot = sum(d[i] * q[i] for i in range(len(d)))
+    mag_1 = sum(d[i] ** 2 for i in range(len(d))) ** 0.5
+    mag_2 = sum(q[i] ** 2 for i in range(len(q))) ** 0.5
+    if mag_1 == 0 or mag_2 == 0:
+        return 0
+    return dot / (mag_1 * mag_2)
+
+def tfidf(data, doc, doc_num, total_docs): #word, doc, doc_count, term_count
+    term, count, pos = data[0], data[1], data[2]
+    poslist = pos.split(';')
+    if doc_num == 0:
+        docposlist = poslist
+    else:
+        for i in poslist:
+            if i[0] == doc_num:
+                docposlist = i.split(',')
+    term_count = len(poslist) #number of docs the term appears in
+    tf = len(docposlist) / len(doc)
+    idf = (total_docs / term_count) ** 0.5
+    return tf * idf
+
+hashmap = ChainHashMap()
+stemmer = PorterStemmer()
+def scorer(doc, doc_num, total_docs):
+    query_tfidf = []
+    docs_to_tfidf = []
+    docdict = {}
+    for word in doc:
+        if not word.is_stop and word.is_alpha:
+            word = stemmer.stem(word.text)
+            data = hashmap.get(word)
+            if data is not None: #[('ball', [...])]
+                query_tfidf.append(tfidf(data, doc, 0, total_docs))
+                for i in data[2].split(';'):
+                    docs_to_tfidf.append(tfidf(data, doc, doc_num, total_docs))
+                    
+
+
+
 def scorer(word):
     data = word[1][0]
     docdata = data.split(';')
@@ -30,11 +71,18 @@ def search(paths, docdict=None):
         index_path = paths
     else:
         index_path = build_index(paths)
+        doc_count = len(paths)
         docdict = {}
         n = 1
         for path in paths:
             docdict[str(n)] = path
             n += 1
+    hashmap = ChainHashMap()
+    with open(index_path, 'r') as f:
+        for line in f:
+            word, value = line.split()
+            hashmap.add(word, value)
+            
     while True:
         partial_scores.clear()
         positions.clear()
@@ -42,12 +90,6 @@ def search(paths, docdict=None):
         nlp = spacy.load('en_core_web_sm')
         stemmer = PorterStemmer()
         doc = nlp(query)
-
-        hashmap = ChainHashMap()
-        with open(index_path, 'r') as f:
-            for line in f:
-                word, value = line.split()
-                hashmap.add(word, value)
 
         for word in doc:
             if not word.is_stop and word.is_alpha:
@@ -65,7 +107,7 @@ def search(paths, docdict=None):
             print("No results found.")
 
 
-def prepare_search(paths):
+def prepare_search(paths): #TODO delete?
     index_path = build_index(paths)
     docdict = {}
     n = 1
