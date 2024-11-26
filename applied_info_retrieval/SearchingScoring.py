@@ -6,8 +6,18 @@ partial_scores = {}
 positions = {}
 
 def cosine(d, q):
-    dot = sum(d[i] * q[i] for i in range(len(d)))
-    mag_1 = sum(d[i] ** 2 for i in range(len(d))) ** 0.5
+    length = max(len(d), len(q))
+    for i in range(length):
+        if i not in d:
+            d[i] = 0
+        if type(d[i]) == list:
+            d[i] = sum(d[i])
+    for i in range(len(q), len(d)):
+        if i not in q:
+            q[i] = 0
+
+    dot = sum(int(d[i]) * q[i] for i in range(len(d)))
+    mag_1 = sum(int(d[i]) ** 2 for i in range(len(d))) ** 0.5
     mag_2 = sum(q[i] ** 2 for i in range(len(q))) ** 0.5
     if mag_1 == 0 or mag_2 == 0:
         return 0
@@ -48,12 +58,12 @@ def scorer(query, total_docs, docdict, hashmap):
                 for i in data[1][0].split(';'):
                     text = docdict[i[0]]
                     tfidf_score = tfidf(data, text, i, total_docs)
-                    if i.split(':')[0][query_index] in doctfidf:
+                    key = i.split(':')[0]
+                    if key in doctfidf and query_index < len(key) and key[query_index] in doctfidf:
                         doctfidf[i.split(':')[0]][query_index] = tfidf_score
                     else:
                         doctfidf[i.split(':')[0]] = {query_index: [tfidf_score]}
-                    print('balls')
-        query_index += 1
+            query_index += 1
     for doc in doctfidf:
         partial_scores[doc] = cosine(doctfidf[doc], query_tfidf)
     return partial_scores
