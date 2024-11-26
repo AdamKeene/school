@@ -14,57 +14,71 @@ def cosine(d, q):
     return dot / (mag_1 * mag_2)
 
 def tfidf(data, doc, doc_num, total_docs): #word, doc, doc_count, term_count
-    term, count, pos = data[0], data[1], data[2]
-    poslist = pos.split(';')
+    #data: [('ball', [...])], doc: full text, doc_num: index of text, total_docs: total number of docs
+    term, info = data[0], data[1][0]
+    info = info.split(';')
+    docnum, count, positions = info[0], info[1], info[2]
+    poslist = positions.split(';')
     if doc_num == 0:
         docposlist = poslist
-    else:
-        for i in poslist:
-            if i[0] == doc_num:
-                docposlist = i.split(',')
+        doc = str(doc)
+    else: # 
+        with open(doc, 'r', errors='ignore') as f:
+            doc = f.read()
+        doc_num = doc_num.split(':')[0]
+        docposlist = positions.split(';')
     term_count = len(poslist) #number of docs the term appears in
-    tf = len(docposlist) / len(doc)
+    tf = len(docposlist) / len(doc.split())
     idf = (total_docs / term_count) ** 0.5
     return tf * idf
 
-hashmap = ChainHashMap()
+# hashmap = ChainHashMap()
 stemmer = PorterStemmer()
-def scorer(doc, doc_num, total_docs):
+def scorer(query, total_docs, docdict, hashmap):
     query_tfidf = []
-    docs_to_tfidf = []
-    docdict = {}
-    for word in doc:
+    doctfidf = {}
+    query_index = 0
+    for word in query:
         if not word.is_stop and word.is_alpha:
             word = stemmer.stem(word.text)
             data = hashmap.get(word)
             if data is not None: #[('ball', [...])]
-                query_tfidf.append(tfidf(data, doc, 0, total_docs))
-                for i in data[2].split(';'):
-                    docs_to_tfidf.append(tfidf(data, doc, doc_num, total_docs))
-                    
+                query_tfidf.append(tfidf(data, query, 0, total_docs))
+                
+                for i in data[1][0].split(';'):
+                    text = docdict[i[0]]
+                    tfidf_score = tfidf(data, text, i, total_docs)
+                    if i.split(':')[0][query_index] in doctfidf:
+                        doctfidf[i.split(':')[0]][query_index] = tfidf_score
+                    else:
+                        doctfidf[i.split(':')[0]] = {query_index: [tfidf_score]}
+                    print('balls')
+        query_index += 1
+    for doc in doctfidf:
+        partial_scores[doc] = cosine(doctfidf[doc], query_tfidf)
+    return partial_scores
+                
 
+# def scorer(word):
+#     data = word[1][0]
+#     docdata = data.split(';')
+#     for data in docdata:
+#         data = data.split(':')
 
-
-def scorer(word):
-    data = word[1][0]
-    docdata = data.split(';')
-    for data in docdata:
-        data = data.split(':')
-
-        doc, score = data[0], data[1]
-        try:
-            partial_scores[doc] += int(score)
-        except:
-            partial_scores[doc] = int(score)
-        pos = data[2].split(',')
-        if doc not in positions:
-            positions[doc] = [pos]
-        else:
-            for k in positions[doc]:
-                min_distance = min(abs(int(l) - int(p)) for p in pos for l in k)
-                if min_distance > 0:
-                    partial_scores[doc] += 1 / min_distance
-            positions[doc].append(pos)
+#         doc, score = data[0], data[1]
+#         try:
+#             partial_scores[doc] += int(score)
+#         except:
+#             partial_scores[doc] = int(score)
+#         pos = data[2].split(',')
+#         if doc not in positions:
+#             positions[doc] = [pos]
+#         else:
+#             for k in positions[doc]:
+#                 min_distance = min(abs(int(l) - int(p)) for p in pos for l in k)
+#                 if min_distance > 0:
+#                     partial_scores[doc] += 1 / min_distance
+#             positions[doc].append(pos)
 
 def search(paths, docdict=None):
     if docdict is not None:
@@ -90,13 +104,9 @@ def search(paths, docdict=None):
         nlp = spacy.load('en_core_web_sm')
         stemmer = PorterStemmer()
         doc = nlp(query)
-
-        for word in doc:
-            if not word.is_stop and word.is_alpha:
-                word = stemmer.stem(word.text)
-                data = hashmap.get(word)
-                if data is not None: #[('ball', [...])]
-                    scorer(data)
+        total_docs = hashmap.__len__()
+        scorer(doc, total_docs, docdict, hashmap)
+            
         print(partial_scores)
         if partial_scores != {}:
             sorted_results = sorted(partial_scores.items(), key=lambda item: item[1], reverse=True)
