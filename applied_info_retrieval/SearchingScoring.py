@@ -6,18 +6,21 @@ partial_scores = {}
 positions = {}
 
 def cosine(d, q):
-    length = max(len(d), len(q))
+    length = len(q)
+    print(len(d), len(q))
     for i in range(length):
         if i not in d:
             d[i] = 0
         if type(d[i]) == list:
             d[i] = sum(d[i])
-    for i in range(len(q), len(d)):
-        if i not in q:
-            q[i] = 0
+        else:
+            print(type(d[i]))
+    # for i in range(length):
+    #     if i not in q:
+    #         q[i] = 0
 
-    dot = sum(int(d[i]) * q[i] for i in range(len(d)))
-    mag_1 = sum(int(d[i]) ** 2 for i in range(len(d))) ** 0.5
+    dot = sum(d[i] * q[i] for i in range(len(q)))
+    mag_1 = sum(d[i] ** 2 for i in range(len(q))) ** 0.5
     mag_2 = sum(q[i] ** 2 for i in range(len(q))) ** 0.5
     if mag_1 == 0 or mag_2 == 0:
         return 0
@@ -26,15 +29,17 @@ def cosine(d, q):
 def tfidf(data, doc, doc_num, total_docs): #word, doc, doc_count, term_count
     #data: [('ball', [...])], doc: full text, doc_num: index of text, total_docs: total number of docs
     term, info = data[0], data[1][0]
-    info = info.split(';')
+
     docnum, count, positions = info[0], info[1], info[2]
-    poslist = positions.split(';')
+    poslist = positions.split(',')
     if doc_num == 0:
         docposlist = poslist
         doc = str(doc)
     else: # 
-        with open(doc, 'r', errors='ignore') as f:
-            doc = f.read()
+        with zipfile.ZipFile(doc, 'r') as zip_ref:
+            file_name = zip_ref.namelist()[0]
+            with zip_ref.open(file_name) as f:
+                doc = f.read().decode('utf-8', errors='ignore')
         doc_num = doc_num.split(':')[0]
         docposlist = positions.split(';')
     term_count = len(poslist) #number of docs the term appears in
@@ -59,36 +64,15 @@ def scorer(query, total_docs, docdict, hashmap):
                     text = docdict[i[0]]
                     tfidf_score = tfidf(data, text, i, total_docs)
                     key = i.split(':')[0]
-                    if key in doctfidf and query_index < len(key) and key[query_index] in doctfidf:
+                    if key in doctfidf:
                         doctfidf[i.split(':')[0]][query_index] = tfidf_score
                     else:
-                        doctfidf[i.split(':')[0]] = {query_index: [tfidf_score]}
+                        doctfidf[i.split(':')[0]] = {query_index: tfidf_score}
             query_index += 1
     for doc in doctfidf:
         partial_scores[doc] = cosine(doctfidf[doc], query_tfidf)
     return partial_scores
                 
-
-# def scorer(word):
-#     data = word[1][0]
-#     docdata = data.split(';')
-#     for data in docdata:
-#         data = data.split(':')
-
-#         doc, score = data[0], data[1]
-#         try:
-#             partial_scores[doc] += int(score)
-#         except:
-#             partial_scores[doc] = int(score)
-#         pos = data[2].split(',')
-#         if doc not in positions:
-#             positions[doc] = [pos]
-#         else:
-#             for k in positions[doc]:
-#                 min_distance = min(abs(int(l) - int(p)) for p in pos for l in k)
-#                 if min_distance > 0:
-#                     partial_scores[doc] += 1 / min_distance
-#             positions[doc].append(pos)
 
 def search(paths, docdict=None):
     if docdict is not None:
