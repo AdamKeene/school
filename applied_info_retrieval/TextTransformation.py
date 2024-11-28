@@ -22,7 +22,7 @@ def process_text(inputPath, outputPath):
     #process text
     output_text = ''
     for token in doc:
-        if not token.is_stop and token.is_alpha:
+        if not token.is_stop:
             output_text += stemmer.stem(token.text) + ' '
     output_text = output_text.strip()
 

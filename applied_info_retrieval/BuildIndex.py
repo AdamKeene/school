@@ -125,7 +125,7 @@ class ChainHashMap(Hash):
 
 
 
-def build_index(docs):
+def build_index(docs, indexfilepath=None):
     chunk_max = 5 * 1024 * 1024
     docnum = 1
     shard_index = 0
@@ -134,7 +134,10 @@ def build_index(docs):
 
     for text in docs:
         with tempfile.TemporaryDirectory() as temp_dir:
-            filepath = process_text(text, temp_dir)
+            if indexfilepath is None:
+                filepath = process_text(text, temp_dir)
+            else:
+                filepath = indexfilepath
             pos = 1
             print(f'reading doc {docnum}')
             with open(filepath, 'r', errors='ignore') as f:
@@ -147,7 +150,6 @@ def build_index(docs):
                         chunk_size = 0
                     shards[shard_index].add(word, (docnum, pos))
                     pos += 1
-                    
             docnum += 1
     #merge shards
     index = ChainHashMap()
@@ -159,10 +161,6 @@ def build_index(docs):
                 index.add_bucket(key, value)
     path = write_index_to_file(index)
     return path
-
-# path = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip'
-# path2 = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'
-# chainhash = build_index([path, path2])
 
 def write_index_to_file(index):
     inv_index_path = "C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt"
@@ -177,5 +175,12 @@ def write_index_to_file(index):
             file.write(f"{key} {positions_str}\n")
     return inv_index_path
 
-# output_filename = 'index_output.txt'
-# write_index_to_file(chainhash)
+def main(paths, index_path=None):
+    if index_path is None:
+        index = build_index(paths)
+    else:
+        index = build_index(paths, index_path)
+    print(index)
+
+# main(['H:\\10001.zip', 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'])
+# main(['H:\\10001.zip', 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip'], index_path='C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt')

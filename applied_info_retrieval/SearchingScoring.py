@@ -25,7 +25,8 @@ def cosine(d, q):
     mag_2 = sum(q[i] ** 2 for i in range(len(q))) ** 0.5
     if mag_1 == 0 or mag_2 == 0:
         return 0
-    return dot / (mag_1 * mag_2)
+    cosine = dot / (mag_1 * mag_2)
+    return cosine
 
 def tfidf(data, doc, doc_num, total_docs, query=False): #word, doc, doc_count, term_count
     #data: [('ball', [...])], doc: full text, doc_num: index of text, total_docs: total number of docs
@@ -86,7 +87,6 @@ def search(paths, docdict=None):
         index_path = paths
     else:
         index_path = build_index(paths)
-        doc_count = len(paths)
         docdict = {}
         n = 1
         for path in paths:
@@ -116,13 +116,7 @@ def search(paths, docdict=None):
         else:
             print("No results found.")
 
-def search_engine():
-    paths = input("Directory of input files: ")
-    input_path = get_all_files(paths)
-    search(input_path)
-
-def search_existing_index():
-    index_path = input("Path to index: ")
+def search_existing_index(index_path):
     paths = input("Directory of input files: ")
     input_path = get_all_files(paths)
     docdict = {}
@@ -132,10 +126,6 @@ def search_existing_index():
         n += 1
     search(index_path, docdict)
 
-inv_index_path = "C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt"
-paths = ['C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10001\\10001.zip', 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0\\10002\\10002.zip']
-# prepare_search(paths)
-
 def get_all_files(directory):
     file_paths = []
     for root, _, files in os.walk(directory):
@@ -144,10 +134,12 @@ def get_all_files(directory):
                 file_paths.append(os.path.join(root, file))
     return file_paths
 
-# input_files_directory = 'C:\\Users\\akeen\\Downloads\\New SWE247P project\\input-files\\aleph.gutenberg.org\\1\\0\\0\\0'
-# input_files_directory = 'C:\Users\akeen\Downloads\New SWE247P project\input-files\aleph.gutenberg.org\1\0\0\0'
-# paths = get_all_files(input_files_directory)
-# prepare_search(paths)
+def search_engine(filepath=None):
+    if filepath is not None:
+        search_existing_index(filepath)
+    else:
+        paths = input("Directory of input files: ")
+        input_path = get_all_files(paths)
+        search(input_path)
 
-# search_engine()
-search_existing_index()
+search_engine('C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt')
