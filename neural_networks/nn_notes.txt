@@ -1,0 +1,172 @@
+
+from tensorflow.keras.datasets import mnist
+(train_images, train_labels), (test_images, test_labels) = mnist.load_data()
+-images are numpy arrays, labes are array 0-9
+
+train_images.shape
+len(train_labels)
+train_labels
+test_images.shape
+len(test_labels)
+test_labels
+-layers are like filters extracting representations of data (data distillation)
+
+The network architecture
+
+from tensorflow import keras
+from tensorflow.keras import layers
+model = keras.Sequential([
+    layers.Dense(512, activation="relu"),
+    layers.Dense(10, activation="softmax")
+])
+-adds two dense layers(fully connected), second is a 10-way softmax layer 10 scores each is probability of belonging to a digit
+
+The compilation step
+
+model.compile(optimizer="rmsprop",
+              loss="sparse_categorical_crossentropy",
+              metrics=["accuracy"])
+-need 3 things for compilation: loss function: measure performance on training data and steer in right direction, 
+optimizer: mechanism to update itself based on data and loss function, and metrics to monitor: only care about accuracy for this example
+
+Preparing the image data
+
+train_images = train_images.reshape((60000, 28 * 28))
+train_images = train_images.astype("float32") / 255
+test_images = test_images.reshape((10000, 28 * 28))
+test_images = test_images.astype("float32") / 255
+-need to reshape into network's shape and scale, from uint8 to float32
+
+"Fitting" the model
+
+model.fit(train_images, train_labels, epochs=5, batch_size=128)
+-start training the network, fit method fits model to training data
+Using the model to make predictions
+
+test_digits = test_images[0:10]
+predictions = model.predict(test_digits)
+predictions[0]
+predictions[0].argmax()
+predictions[0][7]
+test_labels[0]
+Evaluating the model on new data
+
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"test_acc: {test_acc}")
+-diff between training and test data is overfitting
+
+~~BACKPROPOGATION~~
+TODO
+
+~~MOVIE REVIEWS~~
+-binary classification is most common application, in this case positive or negative
+from tensorflow.keras.datasets import imdb
+(train_data, train_labels), (test_data, test_labels) = imdb.load_data(
+    num_words=10000)
+-num words means only top 10000 most frequently occurring words in the training data to keep vector data manageable
+-labels are 0 or 1 bc binary
+train_data[0]
+train_labels[0]
+max([max(sequence) for sequence in train_data])
+-because num_words is set
+
+Decoding reviews back to text
+
+word_index = imdb.get_word_index() -word_index() which is dict mapping words to integer index
+reverse_word_index = dict(
+    [(value, key) for (key, value) in word_index.items()]) -reverse dict
+decoded_review = " ".join(
+    [reverse_word_index.get(i - 3, "?") for i in train_data[0]]) -offset by 3 because 0-2 are reserved for padding start of sequence and unknown
+
+Preparing the data
+-need to turn lists into tensors, can pad lists and turn them into integer tensors and make first layer capable of handling integer tensors (embedding layer),
+or one-hot encode to turn them into vectors of 0s and 1s, and make the first layer a dense layer which handles floating-point vector data
+
+Encoding the integer sequences via multi-hot encoding
+
+import numpy as np
+def vectorize_sequences(sequences, dimension=10000):
+    results = np.zeros((len(sequences), dimension)) -all zeros matrix
+    for i, sequence in enumerate(sequences):
+        for j in sequence:
+            results[i, j] = 1. -sets specific indeces to 1
+    return results
+x_train = vectorize_sequences(train_data)
+x_test = vectorize_sequences(test_data)
+
+x_train[0]
+y_train = np.asarray(train_labels).astype("float32") -vectorize lavels
+y_test = np.asarray(test_labels).astype("float32")
+Building your model
+Model definition
+
+from tensorflow import keras
+from tensorflow.keras import layers
+
+model = keras.Sequential([
+    layers.Dense(16, activation="relu"),
+    layers.Dense(16, activation="relu"),
+    layers.Dense(1, activation="sigmoid")
+])
+Compiling the model
+
+model.compile(optimizer="rmsprop",
+              loss="binary_crossentropy",
+              metrics=["accuracy"])
+Validating your approach
+Setting aside a validation set
+
+x_val = x_train[:10000]
+partial_x_train = x_train[10000:]
+y_val = y_train[:10000]
+partial_y_train = y_train[10000:]
+Training your model
+
+history = model.fit(partial_x_train,
+                    partial_y_train,
+                    epochs=20,
+                    batch_size=512,
+                    validation_data=(x_val, y_val))
+history_dict = history.history
+history_dict.keys()
+Plotting the training and validation loss
+
+import matplotlib.pyplot as plt
+history_dict = history.history
+loss_values = history_dict["loss"]
+val_loss_values = history_dict["val_loss"]
+epochs = range(1, len(loss_values) + 1)
+plt.plot(epochs, loss_values, "bo", label="Training loss")
+plt.plot(epochs, val_loss_values, "b", label="Validation loss")
+plt.title("Training and validation loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
+Plotting the training and validation accuracy
+
+plt.clf()
+acc = history_dict["accuracy"]
+val_acc = history_dict["val_accuracy"]
+plt.plot(epochs, acc, "bo", label="Training acc")
+plt.plot(epochs, val_acc, "b", label="Validation acc")
+plt.title("Training and validation accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+plt.show()
+Retraining a model from scratch
+
+model = keras.Sequential([
+    layers.Dense(16, activation="relu"),
+    layers.Dense(16, activation="relu"),
+    layers.Dense(1, activation="sigmoid")
+])
+model.compile(optimizer="rmsprop",
+              loss="binary_crossentropy",
+              metrics=["accuracy"])
+model.fit(x_train, y_train, epochs=4, batch_size=512)
+results = model.evaluate(x_test, y_test)
+results
+Using a trained model to generate predictions on new data
+model.predict(x_test)
