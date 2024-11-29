@@ -82,6 +82,7 @@ def get_all_files(directory):
                 file_paths.append(os.path.join(root, file))
     return file_paths
 
+
 def search_engine(filepath=None):
     if filepath is not None:
         search_existing_index(filepath)
@@ -90,4 +91,4 @@ def search_engine(filepath=None):
         input_path = get_all_files(paths)
         search(input_path)
 
-search_engine()
+search_engine('C:\\Users\\akeen\\Downloads\\New SWE247P project\\inv-index\\inv-index.txt')

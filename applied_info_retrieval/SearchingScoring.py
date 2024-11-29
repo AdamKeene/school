@@ -134,6 +134,7 @@ def get_all_files(directory):
                 file_paths.append(os.path.join(root, file))
     return file_paths
 
+
 def search_engine(filepath=None):
     if filepath is not None:
         search_existing_index(filepath)
