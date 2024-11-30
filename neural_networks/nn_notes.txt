@@ -56,7 +56,9 @@ print(f"test_acc: {test_acc}")
 -diff between training and test data is overfitting
 
 ~~BACKPROPOGATION~~
-TODO
+-backpropogation is supervised methos for multilayer feed-forward networks
+-feed-forward is uni-directional flow of information forward through hidden nodes to output nodes with no cycles or loops, in contrast with recurrent neural networks that do. feedforward networks are trained using backpropogation.
+-backpropogation models a given function by modifying internal weightings to produce an expected output signal. supervised learning method where error between system output and expected output is used to modify internal state
 
 ~~MOVIE REVIEWS~~
 -binary classification is most common application, in this case positive or negative
@@ -86,7 +88,7 @@ Encoding the integer sequences via multi-hot encoding
 
 import numpy as np
 def vectorize_sequences(sequences, dimension=10000):
-    results = np.zeros((len(sequences), dimension)) -all zeros matrix
+    results = np.zeros((len(sequences), dimension)) -all zeros matrix of shape len sequences, dimension(shape, kinda like size of data)
     for i, sequence in enumerate(sequences):
         for j in sequence:
             results[i, j] = 1. -sets specific indeces to 1
@@ -95,13 +97,23 @@ x_train = vectorize_sequences(train_data)
 x_test = vectorize_sequences(test_data)
 
 x_train[0]
-y_train = np.asarray(train_labels).astype("float32") -vectorize lavels
+y_train = np.asarray(train_labels).astype("float32") -vectorize labels
 y_test = np.asarray(test_labels).astype("float32")
-Building your model
+
+Building your network
+-best type of network when input data is vectors and labels are scalars like this is a simple stack of dense(fully connected) layers with relu activations
+-in dense(16, activation='relu') 16 is num hidden units of the layer, hidden unit is a dimension in the representation space of a layer. relu is rectified linear unit, activation function that outputs input if it's positive else zero. sigmoid activation squashes values into [0,1] as a probability for last layer
+-dimensionality is how much freedom you're allowing the network to have when learning internal representations, more hidden units allows more complex representations but is more computationally expensive and can cause problems like patterns that aren't real
+-two decisions for dense layers: how many layers and how many hidden units. This case 2 intermediate layers 16 units each, third layer with scalar prediction regarding sentiment of current review
+
 Model definition
 
 from tensorflow import keras
 from tensorflow.keras import layers
+
+-activation functions adds non linearity, linear hypothesis space is too restricting regardless of how many layers
+-for loss function binary_crossentropy is best for binary classification with a probability outputs, crossentropy for probability outputs bc measures distance between probability distributions/ground-truth distribution and predictions
+-rmsprop optimizer
 
 model = keras.Sequential([
     layers.Dense(16, activation="relu"),
@@ -110,23 +122,33 @@ model = keras.Sequential([
 ])
 Compiling the model
 
+-passing optimizer loss function and metrics as strings bc part of keras, can also configure optimizer parameters to pass custom loss/metric functions instead
+
 model.compile(optimizer="rmsprop",
               loss="binary_crossentropy",
               metrics=["accuracy"])
+
 Validating your approach
+-to monitor during training create a validation set with 10k samples from original training data (x_val y_val)
+
 Setting aside a validation set
 
 x_val = x_train[:10000]
 partial_x_train = x_train[10000:]
 y_val = y_train[:10000]
 partial_y_train = y_train[10000:]
+
 Training your model
+-20 epochs is 20 iterations over all samples in x_train and y_train tensors, in batches of 512 samples, while monitoring loss and accuracy on 10k samples in validation_data
 
 history = model.fit(partial_x_train,
                     partial_y_train,
                     epochs=20,
                     batch_size=512,
                     validation_data=(x_val, y_val))
+
+-model.fit returns a history object with information about training, 4 entries one per metric being monitored, matplotlib diagram below of training and training and validation loss and training and validation accuracy. training loss/accuracy gets better each epoch but validation accuracy peaks early, overfitting and learning representations specific to training data, overfitting mitigation techniques later
+
 history_dict = history.history
 history_dict.keys()
 Plotting the training and validation loss
