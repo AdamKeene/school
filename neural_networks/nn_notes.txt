@@ -87,6 +87,62 @@ Forward propagate
 -neuron activation, neuron transfer, forward propagation
 -input can be a row from training dataset like in hidden layer or outputs from each neuron in the hidden layer like in output layer
 activation = sum(weight_i * input_i) + bias
+# Calculate neuron activation for an input
+def activate(weights, inputs):
+	activation = weights[-1]
+	for i in range(len(weights)-1):
+		activation += weights[i] * inputs[i]
+	return activation
+-function assumes last weight in list is bias
+-after activation need to transfer to see the output, sigmoid is standard, produces an s curve between 0 and 1, easy to calculate derivative for backpropogating error later
+# Transfer neuron activation
+def transfer(activation):
+	return 1.0 / (1.0 + exp(-activation)) -sigmoid activation
+-forward propogation by calculating outputs for each neuron, outputs of one layer become inputs to neurons on the next layer
+-output is stored in the neuron with the name output
+# Forward propagate input to a network output
+def forward_propagate(network, row):
+	inputs = row
+	for layer in network:
+		new_inputs = []
+		for neuron in layer:
+			activation = activate(neuron['weights'], inputs)
+			neuron['output'] = transfer(activation)
+			new_inputs.append(neuron['output']) -save output in neuron
+		inputs = new_inputs
+	return inputs
+Back Propogate error
+-error is calculated between expected outputs and outputs forward propagated from the network, errors are propagated back through the network from the output layer to the hidden layer assigning blame for error and updating weights as they go
+-transfer derivative then error propagation
+-calculating slope for transfer derivative, uses sigmoid
+# Calculate the derivative of an neuron output
+def transfer_derivative(output):
+	return output * (1.0 - output)
+-error backpropogation, first calculate error for each output neuron to propogate backwards
+error = (output - expected) * transfer_derivative(output)
+-calculation is for output layers, expected value is the class value itself, different for hidden layers
+-error signal for neurons in the hidden layer are calculated as the weighted error of each neuron in the output layer
+error = (weight_k * error_j) * transfer_derivative(output)
+-error_j is error signal of jth neuron, weight_k connects kth neuron to current neuron
+# Backpropagate error and store in neurons
+def backward_propagate_error(network, expected):
+	for i in reversed(range(len(network))): -reversed to ensure neurons in output layer have delta values (error signal) calculated first that hidden layer neurons can use in subsequent iterations
+		layer = network[i]
+		errors = list()
+		if i != len(network)-1:
+			for j in range(len(layer)):
+				error = 0.0
+				for neuron in network[i + 1]:
+					error += (neuron['weights'][j] * neuron['delta']) -error signals for hidden layer neurons accumulated from neurons in output layer where hidden neuron j is also the index of the neuron's weight in neuron['weights'][j]
+				errors.append(error)
+		else:
+			for j in range(len(layer)):
+				neuron = layer[j]
+				errors.append(neuron['output'] - expected[j])
+		for j in range(len(layer)):
+			neuron = layer[j]
+			neuron['delta'] = errors[j] * transfer_derivative(neuron['output'])
+
 
 ~~MOVIE REVIEWS~~
 -binary classification is most common application, in this case positive or negative
