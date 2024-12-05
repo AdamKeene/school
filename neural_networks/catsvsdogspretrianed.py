@@ -18,10 +18,25 @@ conv_base.summary()
 # Extracting the VGG16 features and corresponding labels
 
 base_dir = pathlib.Path("cats_vs_dogs_small")
-train_dataset = base_dir / "train"
-validation_dataset = base_dir / "validation"
-test_dataset = base_dir / "test"
+train_dir = base_dir / "train"
+validation_dir = base_dir / "validation"
+test_dir = base_dir / "test"
 
+train_dataset = image_dataset_from_directory(
+    train_dir,
+    image_size=(180, 180),
+    batch_size=32
+)
+validation_dataset = image_dataset_from_directory(
+    validation_dir,
+    image_size=(180, 180),
+    batch_size=32
+)
+test_dataset = image_dataset_from_directory(
+    test_dir,
+    image_size=(180, 180),
+    batch_size=32
+)
 def get_features_and_labels(dataset):
     all_features = []
     all_labels = []
