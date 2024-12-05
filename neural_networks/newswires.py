@@ -101,10 +101,15 @@ model.compile(optimizer="rmsprop",
               metrics=["accuracy"])
 model.fit(x_train,
           y_train,
-          epochs=9,
+          epochs=12,
           batch_size=512)
 results = model.evaluate(x_test, y_test)
-results
+print(results)
+# 3 layers: [0.9164106249809265, 0.7925200462341309]
+# 4 layers: [0.9933832287788391, 0.7871772050857544]
+# 4 layers 12 epochs: [1.120928168296814, 0.7622439861297607]
+# 3 layers 12 epochs: [0.9964073300361633, 0.777827262878418]
+
 
 test_labels_copy = copy.copy(test_labels)
 np.random.shuffle(test_labels_copy)
@@ -116,24 +121,24 @@ predictions[0].shape
 np.sum(predictions[0])
 np.argmax(predictions[0])
 #A different way to handle the labels and the loss
-y_train = np.array(train_labels)
-y_test = np.array(test_labels)
-model.compile(optimizer="rmsprop",
-              loss="sparse_categorical_crossentropy",
-              metrics=["accuracy"])
+# y_train = np.array(train_labels)
+# y_test = np.array(test_labels)
+# model.compile(optimizer="rmsprop",
+#               loss="sparse_categorical_crossentropy",
+#               metrics=["accuracy"])
 #The importance of having sufficiently large intermediate layers
 #A model with an information bottleneck
 
-model = keras.Sequential([
-    layers.Dense(64, activation="relu"),
-    layers.Dense(4, activation="relu"),
-    layers.Dense(46, activation="softmax")
-])
-model.compile(optimizer="rmsprop",
-              loss="categorical_crossentropy",
-              metrics=["accuracy"])
-model.fit(partial_x_train,
-          partial_y_train,
-          epochs=20,
-          batch_size=128,
-          validation_data=(x_val, y_val))
+# model = keras.Sequential([
+#     layers.Dense(64, activation="relu"),
+#     layers.Dense(4, activation="relu"),
+#     layers.Dense(46, activation="softmax")
+# ])
+# model.compile(optimizer="rmsprop",
+#               loss="categorical_crossentropy",
+#               metrics=["accuracy"])
+# model.fit(partial_x_train,
+#           partial_y_train,
+#           epochs=20,
+#           batch_size=128,
+#           validation_data=(x_val, y_val))

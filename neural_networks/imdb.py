@@ -1,10 +1,13 @@
-#Loading the IMDB dataset
-
 from tensorflow.keras.datasets import imdb
+from tensorflow import keras
+from tensorflow.keras import layers
+import numpy as np
+
+# Loading the IMDB dataset
 (train_data, train_labels), (test_data, test_labels) = imdb.load_data(
     num_words=10000)
-train_data[0]
-train_labels[0]
+print(train_data[0])
+print(train_labels[0])
 max([max(sequence) for sequence in train_data])
 #Decoding reviews back to text
 
@@ -16,7 +19,6 @@ decoded_review = " ".join(
 #Preparing the data
 #Encoding the integer sequences via multi-hot encoding
 
-import numpy as np
 def vectorize_sequences(sequences, dimension=10000):
     results = np.zeros((len(sequences), dimension))
     for i, sequence in enumerate(sequences):
@@ -30,9 +32,6 @@ y_train = np.asarray(train_labels).astype("float32")
 y_test = np.asarray(test_labels).astype("float32")
 # Building your model
 # Model definition
-
-from tensorflow import keras
-from tensorflow.keras import layers
 
 # model = keras.Sequential([
 #     layers.Dense(16, activation="relu"),

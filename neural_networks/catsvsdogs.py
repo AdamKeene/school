@@ -1,6 +1,3 @@
-# Introduction to convnets
-# Instantiating a small convnet
-
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
@@ -174,7 +171,6 @@ history = model.fit(
     callbacks=callbacks)
 # Displaying curves of loss and accuracy during training
 
-import matplotlib.pyplot as plt
 accuracy = history.history["accuracy"]
 val_accuracy = history.history["val_accuracy"]
 loss = history.history["loss"]

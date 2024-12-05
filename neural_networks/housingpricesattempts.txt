@@ -1,0 +1,3 @@
+130 epochs 16 batch size: mean absolute error: 2.48071551322937
+150 epochs 16 batch size: mean absolute error: 2.620718002319336
+130 epochs 12 batch size: mean absolute error: 2.512922763824463
