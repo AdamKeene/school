@@ -10,7 +10,7 @@ from keras.datasets import imdb
 from keras import backend as K
 # https://s3.amazonaws.com/keras-datasets/jena_climate_2009_2016.csv.zip
 
-data_dir = 'C:\\Users\\akeen\\OneDrive\\Documents\\jena_climate' 
+data_dir = 'C:\\Users\\akeen\\Documents\\jena_climate' 
 fname = os.path.join(data_dir, 'jena_climate_2009_2016.csv')
 
 with open(fname) as f:

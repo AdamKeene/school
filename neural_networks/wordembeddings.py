@@ -8,8 +8,9 @@ from tensorflow.keras.layers import Embedding, Flatten, Dense
 from keras.datasets import imdb
 from keras import preprocessing
 
-imdb_dir = 'C:\\Users\\akeen\\OneDrive\\Documents\\aclImdb'
+imdb_dir = 'C:\\Users\\akeen\\Documents\\aclImdb'
 train_dir = os.path.join(imdb_dir, 'train')
+glove_dir = 'C:\\Users\\akeen\\Documents\\glove.6B' # https://nlp.stanford.edu/projects/glove/
 
 labels = []
 texts = []
@@ -54,7 +55,6 @@ y_train = labels[:training_samples]
 x_val = data[training_samples: training_samples + validation_samples]
 y_val = labels[training_samples: training_samples + validation_samples]
 
-glove_dir = 'H:\\glove.6B'
 
 embeddings_index = {}
 with open(os.path.join(glove_dir, 'glove.6B.100d.txt'), encoding='utf-8') as f:
@@ -181,7 +181,6 @@ history = model.fit(x_train, y_train,
                     batch_size=32,
                     validation_split=0.2)
 
-imdb_dir = 'C:\\Users\\akeen\\OneDrive\\Documents\\aclImdb'
 train_dir = os.path.join(imdb_dir, 'train')
 
 labels = []
@@ -229,7 +228,6 @@ y_train = labels[:training_samples]
 x_val = data[training_samples: training_samples + validation_samples]
 y_val = labels[training_samples: training_samples + validation_samples]
 
-glove_dir = 'H:\\glove.6B' # https://nlp.stanford.edu/projects/glove/
 
 embeddings_index = {}
 with open(os.path.join(glove_dir, 'glove.6B.100d.txt'), encoding='utf-8') as f:
