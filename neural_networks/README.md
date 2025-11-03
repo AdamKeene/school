@@ -26,6 +26,18 @@ This repository contains a collection of neural network implementations and expe
   - Transfer learning approaches
   - Advanced CNN architectures with multiple layers
 
+```python
+test_model = keras.models.load_model("convnet_from_scratch.keras")
+test_loss, test_acc = test_model.evaluate(test_dataset)
+print(f"Test accuracy: {test_acc:.3f}")
+# Test accuracy: 0.812
+
+test_model = keras.models.load_model("convnet_from_scratch_with_augmentation.keras")
+test_loss, test_acc = test_model.evaluate(test_dataset)
+print(f"Test accuracy: {test_acc:.3f}")
+# Test accuracy: 0.868
+```
+
 #### Time Series Analysis
 - Advanced RNN Applications (`advancedrnns.py`)
   - Bidirectional LSTM networks
@@ -38,6 +50,39 @@ This repository contains a collection of neural network implementations and expe
   - Multi-class text classification
   - Dense neural network architecture
   - Information bottleneck analysis
+
+![Training and validation loss](figures/newswirefigure.png)
+
+![Training and validation accuracy](figures/newswirefigure2.png)
+
+```python
+results = model.evaluate(x_test, y_test)
+print(results)
+# [0.9253113269805908, 0.800979495048523]
+```
+#### Regression
+- Housing Prices (`housingprices.py`)
+  - Regression on the Boston Housing dataset using a small feed-forward network (2×64 ReLU hidden layers)
+  - Per-feature normalization, MSE loss, MAE metric, and K-fold validation
+  - Model training, evaluation, and example prediction generation
+
+```python
+test_mse_score, test_mae_score = model.evaluate(test_data, test_targets)
+print("mean absolute error:", test_mae_score)
+# Processing fold #1
+# Processing fold #2
+# Processing fold #3
+# Processing fold #0
+# Processing fold #1
+# Processing fold #2
+# Processing fold #3
+# 4/4 ━━━━━━━━━━━━━━━━━━━━ 0s 6ms/step - loss: 13.4129 - mae: 2.5851 
+# mean absolute error: 2.747966766357422
+predictions = model.predict(test_data)
+print(predictions[0])
+# 4/4 ━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step 
+# [9.514192]
+```
 
 ### Advanced Deep Learning Concepts
 - Implementation of various neural network architectures:
@@ -93,13 +138,3 @@ neural_networks/
 ├── rnns.py             # Recurrent neural networks
 └── seqwithcovnets.py   # Sequential data with CNNs
 ```
-
-## Key Learnings
-
-- Implementation of neural networks from fundamental principles
-- Application of deep learning to various real-world problems
-- Experience with different neural network architectures
-- Understanding of model optimization and regularization
-- Practical experience with data preprocessing and augmentation
-
-This project demonstrates comprehensive understanding and practical implementation of modern deep learning techniques, from basic neural networks to advanced architectures like CNNs and RNNs, showing proficiency in both theoretical concepts and practical applications.
