@@ -17,12 +17,15 @@ class CarWorld extends JPanel {
 	controller = new TrafficController();
         MediaTracker mt = new MediaTracker(this);
 	Toolkit toolkit = Toolkit.getDefaultToolkit();
+        
+        String currentDir = System.getProperty("user.dir");
+        System.out.println("Current working directory: " + currentDir);
 
-        redCar = toolkit.getImage("image/redcar.gif");
+        redCar = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/redcar.gif");
         mt.addImage(redCar, 0);
-        blueCar = toolkit.getImage("image/bluecar.gif");
+        blueCar = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/bluecar.gif");
         mt.addImage(blueCar, 1);
-        bridge = toolkit.getImage("image/bridge1.gif");
+        bridge = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/bridge1.gif");
         mt.addImage(bridge, 2);
 
         try {
