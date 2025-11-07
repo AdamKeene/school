@@ -10,3 +10,5 @@ ConcurrentHashMap from textbook, added volatile bc invariant only involves concu
 vector:
 just synchronizing get and delete functions
 
+display 2:
+wrap add and delete in a binary sephamore which is for locks not counting sephamore for counting, 
