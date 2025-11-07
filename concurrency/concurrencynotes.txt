@@ -1,0 +1,12 @@
+usedRows and text array unsafe, added synchronized to methods that access them which is all of them
+
+cars:
+carworld adds car with trafficcontroller controller, controller flips traffic to true then back to false and notifies all to activate waiting cars
+
+hashmap:
+exception in thread Printer
+ConcurrentHashMap from textbook, added volatile bc invariant only involves concurrenthashmap, don't know if volatile is necessary
+
+vector:
+just synchronizing get and delete functions
+

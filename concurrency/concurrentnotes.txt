@@ -1,0 +1,36 @@
+Process: self contained execution environment, own memory space, app can be multiple processes, IPC inter process communication
+Threads: lightweight process, threads exist within a process all processes and all applications have at least one thread, start with main thread which can create additional threads
+Each thread is associated with an instance of class Thread, two strategies: directly control thread creation and management by instantiating thread each time an application needs to instantiate an async task, or abstract thread management from the rest of the application by passing tasks to an executor. 
+Two ways to create a thread instance: 
+1. provide a runnable object: runnable defines a single method called run which contains the code executed in the thread, runnable is passed to thread constructor
+2. subclass thread: thread class itself implements runnable, run method does nothing. Applications can subclass thread and provide its own run implementation
+both methods start with Thread.start. Runnable object is more general bc runnable can subclass classes other than thread, extending Thread is fine for simple applications but is limited requiring classes to be a descendent of Thread.
+Thread.sleep suspends thread for a specified period or depending on other threads. Sleep time precision depends on os. 
+InterruptedException is thrown when another thread interrupts sleep, catching returns from the run method after catching the exception
+its common to use return; to terminate the thread, more complex code should throw interruptedexception to allow interrupt handling code to be centralized in a catch clause
+interrupt mechanism is implemented using the interrupt status flag .interrupt, which is cleared when checking using .interrupted. isInterrupted is used to query other threads for status.
+Methods throwing InterruptedException clear interrupt status but status may be immediately set again by invoking interrupt.
+Join allows threads to wait on the completion of another thread, .join(), can overload with sleep.join to specify a wait period, also responds to interrupt with an InterruptedException
+
+book:
+
+synchronized method prevents unsafe thread problems like race conditions
+liveness hazard is getting stuck in a state unable to make progress like an infinite loop, easier to write in concurrent programs
+performance hazards involve overhead involved with using threads and resources spent scheduling threads instead of running them
+
+if multiple threads access the same mutable state variable without appropriate synchronization its broken, fix it by not sharing the state variable across threads, making the state variable immutable, or use synchronization when accessing the state variable
+encapsulating program state makes it easier to make the program thread safe, java doesn’t force you to encapsulate state though
+object oriented techniques like encapsulation immutability and clear specification of invariants are good, especially encapsulation though
+++ is actually 3 operations get add set, not thread safe
+atomic means this cant happen, AtomicLong prevents this kind of race condition
+setting two different atomic objects is still unsafe though, related state variables need to be updated in one atomic operation
+synchronized {} enforces automicity, need to reference an object to serve as a lock, threads will hold the lock until theyre done so another thread can’t take it
+be mindful of performance with synchronized blocks
+per-thread basis, threads can reenter locked threads if another part of it holds the key, which lets you encapsulate locking behavior, pthreads however are per-invocation
+both the shared variable and everywhere the variable is accessed need to be wrapped in a synchronized block, also the same lock needs to be used whenever the variable is accessed
+use @GuardedBy annotation when guarding using intrinsic lock
+locks being intrinsic is normal convention but only reason for having built in locks is to avoid having to make a lock object
+locking convention is not enforced by the compiler or runtime, you can also just forget to use synchronization, bug finders may or may not find it
+you have to protect variables involved in invariants using the same lock
+multiple actions combined in a compound action need to be protected by the same lock
+
