@@ -15,16 +15,27 @@ public class BankAccounts {
                                      Account toAccount,
                                      DollarAmount amount)
             throws InsufficientFundsException {
-        // synchronized (fromAccount) {
-        //    synchronized (toAccount) {
+		Account firstLock, secondLock;
+		if (fromAccount.getAcctNo() < toAccount.getAcctNo()) {
+			firstLock = fromAccount;
+			secondLock = toAccount;
+		} else if (fromAccount.getAcctNo() > toAccount.getAcctNo()) {
+			firstLock = toAccount;
+			secondLock = fromAccount;
+		} else { // tried to transfer to same account
+			throw new IllegalArgumentException("Cannot transfer to same account");
+		}
+
+        synchronized (firstLock) {
+           synchronized (secondLock) {
                 if (fromAccount.getBalance().compareTo(amount) < 0)
                     throw new InsufficientFundsException();
                 else {
                     fromAccount.debit(amount);
                     toAccount.credit(amount);
                 }
-	//    }
-	// }
+	   }
+	}
     }
 
     static class DollarAmount implements Comparable<DollarAmount> {

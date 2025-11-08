@@ -10,5 +10,17 @@ ConcurrentHashMap from textbook, added volatile bc invariant only involves concu
 vector:
 just synchronizing get and delete functions
 
+message queue:
+LinkedBlockingQueue and queue operations
+
 display 2:
 wrap add and delete in a binary sephamore which is for locks not counting sephamore for counting, 
+
+bank:
+deadlock happens when t1 locks acc1 and tries to lock acc2 while t2 locks acc2 and tries to lock acc1 causing circular wait, lock ordering
+get first lock number first, waits always flow down
+
+web server:
+executor starts 10 thread pool fixed size for simplicity, executor. execute to pool executor assigns automatically,
+currently closes connection immediately dunno if i was supposed to change that to keep alive
+tested with curl -s http://localhost:8080/ > /dev/null & curl -s http://localhost:8080/ > /dev/null & wait
