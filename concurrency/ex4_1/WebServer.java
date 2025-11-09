@@ -42,7 +42,7 @@ public class WebServer {
     }
 	
     public static void main(String[] args) {
-	final Executor exec = Executors.newFixedThreadPool(10);
+	final Executor exec = Executors.newFixedThreadPool(13);
 	try {
 	    ServerSocket serverConnect = new ServerSocket(PORT);
 	    System.out.println("Server started.\nListening for connections on port : " + PORT + " ...\n");

@@ -8,20 +8,31 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
+// import java.util.stream.Collectors;
 
 public class FrequencyCount {
     private static final List<String> stop_words = new ArrayList<String>();
 
     static final class Counter {
-	private HashMap<String, Integer> frequencies = new HashMap<String, Integer>();
+	private ConcurrentHashMap<String, Integer> frequencies = new ConcurrentHashMap<String, Integer>();
+
+	public ThreadPoolExecutor exec = new ThreadPoolExecutor(
+		13, 
+		13, 
+		0L, 
+		TimeUnit.MILLISECONDS, 
+		new LinkedBlockingQueue<Runnable>()
+		);
 
 	private void process(Path filepath) {
 	    try {
@@ -39,10 +50,7 @@ public class FrequencyCount {
 	    for (String word : words) {
 		String w = word.toLowerCase();
 		if (!stop_words.contains(w) && w.length() > 2) {
-		    if (frequencies.containsKey(w))
-			frequencies.put(w, frequencies.get(w)+1);
-		    else
-			frequencies.put(w, 1);
+		    frequencies.compute(w, (key, value) -> (value == null) ? 1 : value + 1);
 		}
 	    }
 	}
@@ -60,7 +68,7 @@ public class FrequencyCount {
 	    return list;
 	}
 
-	private HashMap<String, Integer> getFrequencies() { 
+	private ConcurrentHashMap<String, Integer> getFrequencies() { 
 	    return frequencies; 
 	}
 
@@ -87,7 +95,7 @@ public class FrequencyCount {
     private static void loadStopWords() {
 	String str = "";
 	try {
-	    byte[] encoded = Files.readAllBytes(Paths.get("stop_words"));
+	    byte[] encoded = Files.readAllBytes(Paths.get("concurrency/ex4.2/stop_words"));
 	    str = new String(encoded);    
 	} catch (IOException e) {
 	    System.out.println("Error reading stop_words");
@@ -109,13 +117,27 @@ public class FrequencyCount {
 
 	long start = System.nanoTime();
 	try {
-	    try (Stream<Path> paths = Files.walk(Paths.get("."))) {
+	    try (Stream<Path> paths = Files.walk(Paths.get("concurrency/ex4.2"))) {
 		    paths.filter(p -> p.toString().endsWith(".txt"))
-			.forEach(p -> countWords(p, c));
+			// .forEach(p -> countWords(p, c));
+			.forEach(p -> c.exec.execute(new Runnable() {
+				public void run() {
+					countWords(p, c);
+				}
+			}));
 		} 
 	} catch (IOException e) {
 	    e.printStackTrace();
 	}
+	
+	// Shutdown the executor and wait for all tasks to complete
+	c.exec.shutdown();
+	try {
+	    c.exec.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+	} catch (InterruptedException e) {
+	    e.printStackTrace();
+	}
+	
 	long end = System.nanoTime();
 
 	long elapsed = end - start;
