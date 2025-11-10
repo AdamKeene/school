@@ -21,8 +21,9 @@ deadlock happens when t1 locks acc1 and tries to lock acc2 while t2 locks acc2 a
 get first lock number first, waits always flow down
 
 web server:
-executor starts 10 thread pool fixed size for simplicity, executor. execute to pool executor assigns automatically,
+executor starts 13 thread pool fixed size for simplicity 13 bc nproc 12 cores + 1, executor. execute to pool executor assigns automatically,
 currently closes connection immediately dunno if i was supposed to change that to keep alive
 tested with curl -s http://localhost:8080/ > /dev/null & curl -s http://localhost:8080/ > /dev/null & wait
 
 word counter:
+concurrency errors, used concurrenthashmap, 
