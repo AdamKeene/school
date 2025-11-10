@@ -24,3 +24,5 @@ web server:
 executor starts 10 thread pool fixed size for simplicity, executor. execute to pool executor assigns automatically,
 currently closes connection immediately dunno if i was supposed to change that to keep alive
 tested with curl -s http://localhost:8080/ > /dev/null & curl -s http://localhost:8080/ > /dev/null & wait
+
+word counter:
