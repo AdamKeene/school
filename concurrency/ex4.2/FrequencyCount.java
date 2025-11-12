@@ -130,7 +130,7 @@ public class FrequencyCount {
 	    e.printStackTrace();
 	}
 	
-	// Shutdown the executor and wait for all tasks to complete
+	// shutdown the executor and wait
 	c.exec.shutdown();
 	try {
 	    c.exec.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
