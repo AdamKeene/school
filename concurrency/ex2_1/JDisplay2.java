@@ -1,3 +1,5 @@
+package ex2_1;
+
 public class JDisplay2 implements HighLevelDisplay {
 
     private JDisplay d;

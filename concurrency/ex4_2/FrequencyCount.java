@@ -1,3 +1,5 @@
+package ex4_2;
+
 /*
  * @author Crista Lopes
  * Simple word frequency program
@@ -95,7 +97,7 @@ public class FrequencyCount {
     private static void loadStopWords() {
 	String str = "";
 	try {
-	    byte[] encoded = Files.readAllBytes(Paths.get("concurrency/ex4.2/stop_words"));
+	    byte[] encoded = Files.readAllBytes(Paths.get("concurrency/ex4_2/stop_words"));
 	    str = new String(encoded);    
 	} catch (IOException e) {
 	    System.out.println("Error reading stop_words");
@@ -117,7 +119,7 @@ public class FrequencyCount {
 
 	long start = System.nanoTime();
 	try {
-	    try (Stream<Path> paths = Files.walk(Paths.get("concurrency/ex4.2"))) {
+	    try (Stream<Path> paths = Files.walk(Paths.get("concurrency/ex4_2"))) {
 		    paths.filter(p -> p.toString().endsWith(".txt"))
 			// .forEach(p -> countWords(p, c));
 			.forEach(p -> c.exec.execute(new Runnable() {

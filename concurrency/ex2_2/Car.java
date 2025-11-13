@@ -1,3 +1,5 @@
+package ex2_2;
+
 import java.awt.*;
 
 public class Car implements Runnable{

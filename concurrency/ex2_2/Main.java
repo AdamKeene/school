@@ -1,3 +1,5 @@
+package ex2_2;
+
 public class Main {
 
     private static void nap(int ms) {

@@ -1,3 +1,5 @@
+package ex2_1;
+
 import java.awt.*;
 import javax.swing.*;
 

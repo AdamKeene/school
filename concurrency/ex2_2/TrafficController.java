@@ -1,3 +1,5 @@
+package ex2_2;
+
 public class TrafficController {
 
     private int carsOnBridge = 0;

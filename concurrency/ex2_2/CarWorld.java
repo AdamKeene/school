@@ -1,3 +1,5 @@
+package ex2_2;
+
 import java.awt.*;
 import java.util.*;
 import javax.swing.*;
@@ -21,11 +23,11 @@ class CarWorld extends JPanel {
         String currentDir = System.getProperty("user.dir");
         System.out.println("Current working directory: " + currentDir);
 
-        redCar = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/redcar.gif");
+        redCar = toolkit.getImage(currentDir + "/concurrency/ex2_2/image/redcar.gif");
         mt.addImage(redCar, 0);
-        blueCar = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/bluecar.gif");
+        blueCar = toolkit.getImage(currentDir + "/concurrency/ex2_2/image/bluecar.gif");
         mt.addImage(blueCar, 1);
-        bridge = toolkit.getImage(currentDir + "/concurrency/ex2.2/image/bridge1.gif");
+        bridge = toolkit.getImage(currentDir + "/concurrency/ex2_2/image/bridge1.gif");
         mt.addImage(bridge, 2);
 
         try {

@@ -1,3 +1,5 @@
+package ex2_1;
+
 import java.util.concurrent.*;
 
 public class Main3 {

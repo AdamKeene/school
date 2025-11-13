@@ -1,3 +1,5 @@
+package ex2_1;
+
 public class Main1 {
 
     private static void nap(int millisecs) {
