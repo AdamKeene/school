@@ -1,4 +1,5 @@
-usedRows and text array unsafe, added synchronized to methods that access them which is all of them
+display:
+updateRow usedRows and text array unsafe, added synchronized to methods that access updateRow which is all of them
 
 cars:
 carworld adds car with trafficcontroller controller, controller flips traffic to true then back to false and notifies all to activate waiting cars
@@ -6,12 +7,13 @@ carworld adds car with trafficcontroller controller, controller flips traffic to
 hashmap:
 exception in thread Printer
 ConcurrentHashMap from textbook, added volatile bc invariant only involves concurrenthashmap, don't know if volatile is necessary
+delete people just deletes now
 
 vector:
 just synchronizing get and delete functions
 
 message queue:
-LinkedBlockingQueue and queue operations
+LinkedBlockingQueue and queue operations, main is in messagequeue
 
 display 2:
 wrap add and delete in a binary sephamore which is for locks not counting sephamore for counting, 

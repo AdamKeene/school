@@ -4,11 +4,13 @@ import java.util.Vector;
 
 public class VectorTest {
 
-    private boolean running = true;
+    private volatile boolean running = true;
     private Vector<String> people = new Vector<String>();
 
     private void addPerson() {
-	people.add(RandomUtils.randomString());
+        synchronized(people) {
+	    people.add(RandomUtils.randomString());
+        }
     }
 
     private String getLast() {
@@ -37,7 +39,7 @@ public class VectorTest {
 			String person = getLast();
 			System.out.println("Last: " + person);
 			try {
-			    Thread.sleep(200);
+			    Thread.sleep(100);
 			} catch (InterruptedException e) {}
 		    }
 		}
@@ -50,7 +52,7 @@ public class VectorTest {
 		    while (running) {
 			deleteLast();
 			try {
-			    Thread.sleep(200);
+			    Thread.sleep(300);
 			} catch (InterruptedException e) {}
 		    }
 		}

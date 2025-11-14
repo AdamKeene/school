@@ -20,7 +20,6 @@ class FrequencyCount:
     def process_line(self, line):
         try:
             words = re.findall(r'\w{3,}', line.lower())
-            # Filter out stop words and update counter thread-safely
             with self.lock:
                 for word in words:
                     if word not in self.stop_words:

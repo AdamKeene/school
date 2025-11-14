@@ -14,13 +14,11 @@ public class HashMapTest {
     }
 
     private void deletePeople(String pattern) {
-	Vector<String> hasPattern = new Vector<String>();
 	for (String key : people.keySet()) {
-	    if (key.contains(pattern))
-		hasPattern.add(key);
+	    if (key.contains(pattern)) {
+		people.remove(key);
+	    }
 	}
-	for (String key : hasPattern)
-	    people.remove(key);
     }
 
     private void printPeople() {
