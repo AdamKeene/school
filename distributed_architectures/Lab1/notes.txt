@@ -1,0 +1,4 @@
+changed time format
+other files work for the assignment so left them alone
+sinkfilter just prints temperature, only have to change sink
+while true does the work on the stream, 
