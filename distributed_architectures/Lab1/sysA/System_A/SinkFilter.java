@@ -20,10 +20,11 @@
 ******************************************************************************************************************/
 
 import java.util.*;						// This class is used to interpret time words
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;		// This class is used to format and write time in a string format.
 
 public class SinkFilter extends FilterFramework
-{
+{		
 	public void run()
     {
 		/************************************************************************************
@@ -42,13 +43,21 @@ public class SinkFilter extends FilterFramework
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
 
-		long Time = 0;
-		double Velocity = 0;
-		double Altitude = 0;
-		double Pressure = 0;
-		double Temperature = 0;
-		boolean hasTime = false;
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter("OutputA.csv");
+		} catch (Exception e) {
+			System.out.println("Error opening OutputA.csv: " + e);
+			writer.close();
+			return;
+		}
 
+		long time = 0;
+		double velocity = 0;
+		double altitude = 0;
+		double pressure = 0;
+		double temperature = 0;
+		boolean hasTime = false;
 
 		// First we announce to the world that we are alive...
 		System.out.print( "\n" + this.getName() + "::Sink Reading ");
@@ -99,27 +108,23 @@ public class SinkFilter extends FilterFramework
 
 				if ( id == 0 ) { // Time
 					if (hasTime) { // If not the first frame write prev frame
-						TimeStamp.setTimeInMillis(Time);
+						TimeStamp.setTimeInMillis(time);
 						String timeStr = TimeStampFormat.format(TimeStamp.getTime());
+						writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 					}
-					TimeStamp.setTimeInMillis(measurement);
+					time = measurement;
+					hasTime = true;
+				
+				// if not time set the appropriate measurement
+				} else if (id == 1) {
+					velocity = Double.longBitsToDouble(measurement);
+				} else if (id == 2) {
+					altitude = Double.longBitsToDouble(measurement);
+				} else if (id == 3) {
+					pressure = Double.longBitsToDouble(measurement);
+				} else if (id == 4) {
+					temperature = Double.longBitsToDouble(measurement);
 				}
-				Time = measurement;
-				hasTime = true;
-
-				/****************************************************************************
-				// Here we pick up a measurement (ID = 4 in this case), but you can pick up
-				// any measurement you want to. All measurements in the stream are
-				// captured by this class. Note that all data measurements are double types
-				// This illustrates how to convert the bits read from the stream into a double
-				// type. Its pretty simple using Double.longBitsToDouble(long value). So here
-				// we print the time stamp and the data associated with the ID we are interested in.
-				****************************************************************************/
-				if ( id == 4 )
-				{
-					System.out.print( TimeStampFormat.format(TimeStamp.getTime()) + " ID = " + id + " " + Double.longBitsToDouble(measurement) );
-				}
-				System.out.print( "\n" );
 			}
 			/*******************************************************************************
 			*	The EndOfStreamExeception below is thrown when you reach end of the input
@@ -128,6 +133,12 @@ public class SinkFilter extends FilterFramework
 			********************************************************************************/
 			catch (EndOfStreamException e)
 			{
+				if (hasTime) {
+					TimeStamp.setTimeInMillis(time);
+					String timeStr = TimeStampFormat.format(TimeStamp.getTime());
+					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
+				}
+				writer.close();
 				ClosePorts();
 				System.out.print( "\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread );
 				break;
