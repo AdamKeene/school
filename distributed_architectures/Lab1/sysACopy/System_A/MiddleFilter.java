@@ -23,7 +23,7 @@ public class MiddleFilter extends FilterFramework
 {
 	private PrintWriter wildJumpWriter;
 	private static final double JUMP_THRESHOLD = 100.0;
-	private static final int ALTITUDE_START = 33;
+	private static final int ALTITUDE_START = 28;
 	private static final int ALTITUDE_LENGTH = 8;
 	private static final int TOTAL_LENGTH = 59;
 	private int frameCount = 0;
@@ -46,10 +46,17 @@ public class MiddleFilter extends FilterFramework
 				for (int i = 0; i < TOTAL_LENGTH; i++) {
 					buffer[i] = ReadFilterInputPort();
 				}
-				for (byte b : buffer) {
-					System.out.print((b & 0xFF) + " ");
-				}
 				System.out.println();
+				// Extract altitude data (id == 2): 8 bytes starting at position 33
+				long altitudeMeasurement = 0;
+				for (int i = 0; i < ALTITUDE_LENGTH; i++) {
+					altitudeMeasurement = altitudeMeasurement | (buffer[ALTITUDE_START + i] & 0xFF);
+					if (i != ALTITUDE_LENGTH - 1) {
+						altitudeMeasurement = altitudeMeasurement << 8;
+					}
+				}
+				double altitude = Double.longBitsToDouble(altitudeMeasurement);
+				System.out.println("Altitude: " + String.format("%.5f", altitude));
 				databyte = ReadFilterInputPort();
 				bytesread++;
 				WriteFilterOutputPort(databyte);
