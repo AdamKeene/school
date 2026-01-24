@@ -46,9 +46,9 @@ public class SinkFilter extends FilterFramework
 
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter("OutputA.csv");
+			writer = new PrintWriter("OutputB.csv");
 		} catch (Exception e) {
-			System.out.println("Error opening OutputA.csv: " + e);
+			System.out.println("Error opening OutputB.csv: " + e);
 			writer.close();
 			return;
 		}

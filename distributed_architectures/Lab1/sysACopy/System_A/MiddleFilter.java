@@ -25,8 +25,9 @@ public class MiddleFilter extends FilterFramework
 	private static final int ID_LENGTH = 4;
 	private static final int MEASUREMENT_LENGTH = 8;
 	private int frameCount = 0;
-	private double previousAltitude1 = 0.0;
-	private double previousAltitude2 = 0.0;
+	private double prevAltitude = 0.0;
+	private double thirdAltitude = 0.0;
+	
 
 	public void run()
     {
@@ -36,6 +37,15 @@ public class MiddleFilter extends FilterFramework
 		int id = 0;
 		long measurement = 0;
 		int i;
+
+		PrintWriter wildPointsWriter = null;
+		try {
+			wildPointsWriter = new PrintWriter("WildPoints.csv");
+		} catch (Exception e) {
+			System.out.println("Error opening WildPointsA.csv: " + e);
+			wildPointsWriter.close();
+			return;
+		}
 
 		System.out.print( "\n" + this.getName() + "::Middle Reading ");
 
@@ -71,16 +81,20 @@ public class MiddleFilter extends FilterFramework
 				byte altitudeAltered = 0;
 				if (id == 2) {
 					double altitude = Double.longBitsToDouble(measurement);
-					System.out.println("Altitude: " + String.format("%.5f", altitude));
+					double originalAltitude = altitude;  // Save the original wild jump value
+					frameCount++;
 
 					// Detect altitude changes greater than JUMP_THRESHOLD
-					double altitudeChange = Math.abs(altitude - previousAltitude1);
+					double altitudeChange = Math.abs(altitude - prevAltitude);
 					if (frameCount > 1 && altitudeChange > JUMP_THRESHOLD) {
-						System.out.println("*** ALTITUDE JUMP DETECTED: " + String.format("%.5f", altitudeChange) + " feet ***");
-						altitude = (previousAltitude1 + previousAltitude2) / 2.0;
-						System.out.println("*** SMOOTHED TO: " + String.format("%.5f", altitude));
+						if (frameCount == 2) {
+							altitude = prevAltitude;
+						} else {
+							altitude = (prevAltitude + thirdAltitude) / 2.0;
+						}
+						wildPointsWriter.println(String.format("%.5f", originalAltitude));
 						altitudeAltered = 1;
-						
+
 						// Convert smoothed altitude back to bytes
 						long smoothedMeasurement = Double.doubleToLongBits(altitude);
 						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
@@ -88,9 +102,8 @@ public class MiddleFilter extends FilterFramework
 						}
 					}
 					
-					previousAltitude2 = previousAltitude1;
-					previousAltitude1 = altitude;
-					frameCount++;
+					thirdAltitude = prevAltitude;
+					prevAltitude = altitude;
 				}
 
 				// Write ID
@@ -105,13 +118,16 @@ public class MiddleFilter extends FilterFramework
 					byteswritten++;
 				}
 
-				// Write the flag byte
-				WriteFilterOutputPort(altitudeAltered);
-				byteswritten++;
+				// Write the flag byte only for altitude (ID 2)
+				if (id == 2) {
+					WriteFilterOutputPort(altitudeAltered);
+					byteswritten++;
+				}
 			}
 			catch (EndOfStreamException e)
 			{
 				ClosePorts();
+				wildPointsWriter.close();
 				System.out.print( "\n" + this.getName() + "::Middle Exiting; bytes read: " + bytesread + " bytes written: " + byteswritten );
 				break;
 			}
