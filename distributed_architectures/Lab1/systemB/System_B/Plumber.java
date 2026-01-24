@@ -1,20 +1,9 @@
 /******************************************************************************************************************
 * File:Plumber.java
 * Project: Lab 1
-* Copyright:
-*   Copyright (c) 2020 University of California, Irvine
-*   Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*   1.1 January 2020 - Revision for SWE 264P: Distributed Software Architecture, Winter 2020, UC Irvine.
-*   1.0 November 2008 - Sample Pipe and Filter code (ajl).
 *
 * Description:
-* This class serves as an example to illstrate how to use the PlumberTemplate to create a main thread that
-* instantiates and connects a set of filters. This example consists of three filters: a source, a middle filter
-* that acts as a pass-through filter (it does nothing to the data), and a sink filter which illustrates all kinds
-* of useful things that you can do with the input stream of data.
-* Parameters: None
-* Internal Methods:	None
+* This class connects the source, middle, and sink filters together to form the complete data processing pipeline.
 ******************************************************************************************************************/
 
 public class Plumber

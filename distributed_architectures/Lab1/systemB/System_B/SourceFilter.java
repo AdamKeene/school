@@ -1,18 +1,9 @@
 /******************************************************************************************************************
 * File:SourceFilter.java
 * Project: Lab 1
-* Copyright:
-*   Copyright (c) 2020 University of California, Irvine
-*   Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*   1.1 January 2020 - Revision for SWE 264P: Distributed Software Architecture, Winter 2020, UC Irvine.
-*   1.0 November 2008 - Sample Pipe and Filter code (ajl).
 *
 * Description:
-* This class serves as an example for how to use the SourceFilterTemplate to create a source filter. This particular
-* filter is a source filter that reads some input from the FlightData.dat file and writes the bytes up stream.
-* Parameters: 		None
-* Internal Methods: None
+* This class reads data from a file "FlightData.dat" and writes it to the output port byte by byte.
 ******************************************************************************************************************/
 
 import java.io.*;

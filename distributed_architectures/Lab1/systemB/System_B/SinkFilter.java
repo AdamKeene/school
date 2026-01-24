@@ -1,22 +1,9 @@
 /******************************************************************************************************************
 * File:SinkFilter.java
 * Project: Lab 1
-* Copyright:
-*   Copyright (c) 2020 University of California, Irvine
-*   Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*   1.1 January 2020 - Revision for SWE 264P: Distributed Software Architecture, Winter 2020, UC Irvine.
-*   1.0 November 2008 - Sample Pipe and Filter code (ajl).
 *
 * Description:
-* This class serves as an example for using the SinkFilterTemplate for creating a sink filter. This particular
-* filter reads some input from the filter's input port and does the following:
-*	1) It parses the input stream and "decommutates" the measurement ID
-*	2) It parses the input steam for measurments and "decommutates" measurements, storing the bits in a long word.
-* This filter illustrates how to convert the byte stream data from the upstream filterinto useable data found in
-* the stream: namely time (long type) and measurements (double type).
-* Parameters: None
-* Internal Methods: None
+* This class reads data from the input port, processes it, and writes the results to an output CSV file.
 ******************************************************************************************************************/
 
 import java.util.*;						// This class is used to interpret time words
@@ -42,13 +29,22 @@ public class SinkFilter extends FilterFramework
 		long measurement;				// This is the word used to store all measurements - conversions are illustrated.
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
+		byte altitudeAltered = 0;		// Flag byte for altitude alteration
 
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter("OutputA.csv");
+			writer = new PrintWriter("OutputB.csv");
 		} catch (Exception e) {
-			System.out.println("Error opening OutputA.csv: " + e);
+			System.out.println("Error opening OutputB.csv: " + e);
 			writer.close();
+			return;
+		}
+		PrintWriter wildPointsWriter = null;
+		try {
+			wildPointsWriter = new PrintWriter("WildPoints.csv");
+		} catch (Exception e) {
+			System.out.println("Error opening WildPointsA.csv: " + e);
+			wildPointsWriter.close();
 			return;
 		}
 
@@ -110,7 +106,11 @@ public class SinkFilter extends FilterFramework
 					if (hasTime) { // If not the first frame write prev frame
 						TimeStamp.setTimeInMillis(time);
 						String timeStr = TimeStampFormat.format(TimeStamp.getTime());
-						writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
+					String altitudeStr = String.format("%.5f", altitude);
+					if (altitudeAltered == 1) {
+						altitudeStr += "*";
+					}
+					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + altitudeStr + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 					}
 					time = measurement;
 					hasTime = true;
@@ -120,10 +120,16 @@ public class SinkFilter extends FilterFramework
 					velocity = Double.longBitsToDouble(measurement);
 				} else if (id == 2) {
 					altitude = Double.longBitsToDouble(measurement);
+					// Read the flag byte (indicates if altitude was altered)
+					databyte = ReadFilterInputPort();
+					altitudeAltered = databyte;
+					bytesread++;
 				} else if (id == 3) {
 					pressure = Double.longBitsToDouble(measurement);
 				} else if (id == 4) {
 					temperature = Double.longBitsToDouble(measurement);
+				} else if (id == 5) {
+					wildPointsWriter.println(String.format("%.5f", Double.longBitsToDouble(measurement)));
 				}
 			}
 			/*******************************************************************************
@@ -136,9 +142,14 @@ public class SinkFilter extends FilterFramework
 				if (hasTime) {
 					TimeStamp.setTimeInMillis(time);
 					String timeStr = TimeStampFormat.format(TimeStamp.getTime());
-					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
+					String altitudeStr = String.format("%.5f", altitude);
+					if (altitudeAltered == 1) {
+						altitudeStr += "*";
+					}
+					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + altitudeStr + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 				}
 				writer.close();
+				wildPointsWriter.close();
 				ClosePorts();
 				System.out.print( "\n" + this.getName() + "::Sink Exiting; bytes read: " + bytesread );
 				break;

@@ -1,22 +1,9 @@
-import java.io.PrintWriter;
-import java.util.List;
-
 /******************************************************************************************************************
 * File:MiddleFilter.java
 * Project: Lab 1
-* Copyright:
-*   Copyright (c) 2020 University of California, Irvine
-*   Copyright (c) 2003 Carnegie Mellon University
-* Versions:
-*   1.1 January 2020 - Revision for SWE 264P: Distributed Software Architecture, Winter 2020, UC Irvine.
-*   1.0 November 2008 - Sample Pipe and Filter code (ajl).
 *
 * Description:
-* This class serves as an example for how to use the FilterRemplate to create a standard filter. This particular
-* example is a simple "pass-through" filter that reads data from the filter's input port and writes data out the
-* filter's output port.
-* Parameters: None
-* Internal Methods: None
+* This class reas from the input port, detects and smooths wild jumps in altitude data, and writes to the output port.
 ******************************************************************************************************************/
 
 public class MiddleFilter extends FilterFramework
@@ -33,19 +20,9 @@ public class MiddleFilter extends FilterFramework
     {
 		int bytesread = 0;
 		int byteswritten = 0;
-		byte databyte = 0;
 		int id = 0;
 		long measurement = 0;
 		int i;
-
-		PrintWriter wildPointsWriter = null;
-		try {
-			wildPointsWriter = new PrintWriter("WildPoints.csv");
-		} catch (Exception e) {
-			System.out.println("Error opening WildPointsA.csv: " + e);
-			wildPointsWriter.close();
-			return;
-		}
 
 		System.out.print( "\n" + this.getName() + "::Middle Reading ");
 
@@ -84,7 +61,7 @@ public class MiddleFilter extends FilterFramework
 					double originalAltitude = altitude;  // Save the original wild jump value
 					frameCount++;
 
-					// Detect altitude changes greater than JUMP_THRESHOLD
+					// Detect wild jumps and smooth data when necessary
 					double altitudeChange = Math.abs(altitude - prevAltitude);
 					if (frameCount > 1 && altitudeChange > JUMP_THRESHOLD) {
 						if (frameCount == 2) {
@@ -92,8 +69,27 @@ public class MiddleFilter extends FilterFramework
 						} else {
 							altitude = (prevAltitude + thirdAltitude) / 2.0;
 						}
-						wildPointsWriter.println(String.format("%.5f", originalAltitude));
 						altitudeAltered = 1;
+
+						// Send wild point data through pipe with ID=5
+						int wildId = 5;
+						long wildMeasurement = Double.doubleToLongBits(originalAltitude);
+						byte[] wildIdBytes = new byte[ID_LENGTH];
+						for (i = 0; i < ID_LENGTH; i++) {
+							wildIdBytes[ID_LENGTH - 1 - i] = (byte)((wildId >>> (i * 8)) & 0xFF);
+						}
+						for (i = 0; i < ID_LENGTH; i++) {
+							WriteFilterOutputPort(wildIdBytes[i]);
+							byteswritten++;
+						}
+						byte[] wildMeasurementBytes = new byte[MEASUREMENT_LENGTH];
+						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
+							wildMeasurementBytes[MEASUREMENT_LENGTH - 1 - i] = (byte)((wildMeasurement >>> (i * 8)) & 0xFF);
+						}
+						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
+							WriteFilterOutputPort(wildMeasurementBytes[i]);
+							byteswritten++;
+						}
 
 						// Convert smoothed altitude back to bytes
 						long smoothedMeasurement = Double.doubleToLongBits(altitude);
@@ -101,7 +97,6 @@ public class MiddleFilter extends FilterFramework
 							measurementBytes[MEASUREMENT_LENGTH - 1 - i] = (byte)((smoothedMeasurement >>> (i * 8)) & 0xFF);
 						}
 					}
-					
 					thirdAltitude = prevAltitude;
 					prevAltitude = altitude;
 				}
@@ -124,10 +119,11 @@ public class MiddleFilter extends FilterFramework
 					byteswritten++;
 				}
 			}
+
+			// Close points and writer
 			catch (EndOfStreamException e)
 			{
 				ClosePorts();
-				wildPointsWriter.close();
 				System.out.print( "\n" + this.getName() + "::Middle Exiting; bytes read: " + bytesread + " bytes written: " + byteswritten );
 				break;
 			}
