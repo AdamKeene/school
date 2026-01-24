@@ -42,6 +42,7 @@ public class SinkFilter extends FilterFramework
 		long measurement;				// This is the word used to store all measurements - conversions are illustrated.
 		int id;							// This is the measurement id
 		int i;							// This is a loop counter
+		byte altitudeAltered = 0;		// Flag byte for altitude alteration
 
 		PrintWriter writer = null;
 		try {
@@ -110,7 +111,11 @@ public class SinkFilter extends FilterFramework
 					if (hasTime) { // If not the first frame write prev frame
 						TimeStamp.setTimeInMillis(time);
 						String timeStr = TimeStampFormat.format(TimeStamp.getTime());
-						writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
+					String altitudeStr = String.format("%.5f", altitude);
+					if (altitudeAltered == 1) {
+						altitudeStr += "*";
+					}
+					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + altitudeStr + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 					}
 					time = measurement;
 					hasTime = true;
@@ -120,6 +125,10 @@ public class SinkFilter extends FilterFramework
 					velocity = Double.longBitsToDouble(measurement);
 				} else if (id == 2) {
 					altitude = Double.longBitsToDouble(measurement);
+					// Read the flag byte (indicates if altitude was altered)
+					databyte = ReadFilterInputPort();
+					altitudeAltered = databyte;
+					bytesread++;
 				} else if (id == 3) {
 					pressure = Double.longBitsToDouble(measurement);
 				} else if (id == 4) {
@@ -136,7 +145,11 @@ public class SinkFilter extends FilterFramework
 				if (hasTime) {
 					TimeStamp.setTimeInMillis(time);
 					String timeStr = TimeStampFormat.format(TimeStamp.getTime());
-					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + String.format("%.5f", altitude) + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
+					String altitudeStr = String.format("%.5f", altitude);
+					if (altitudeAltered == 1) {
+						altitudeStr += "*";
+					}
+					writer.println(timeStr + "," + String.format("%.5f", velocity) + "," + altitudeStr + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 				}
 				writer.close();
 				ClosePorts();

@@ -21,45 +21,92 @@ import java.util.List;
 
 public class MiddleFilter extends FilterFramework
 {
-	private PrintWriter wildJumpWriter;
 	private static final double JUMP_THRESHOLD = 100.0;
-	private static final int ALTITUDE_START = 28;
-	private static final int ALTITUDE_LENGTH = 8;
-	private static final int TOTAL_LENGTH = 59;
+	private static final int ID_LENGTH = 4;
+	private static final int MEASUREMENT_LENGTH = 8;
 	private int frameCount = 0;
+	private double previousAltitude1 = 0.0;
+	private double previousAltitude2 = 0.0;
 
 	public void run()
     {
-		byte[] buffer = new byte[59];
-		int bytesread = 0;					// Number of bytes read from the input file.
-		int byteswritten = 0;				// Number of bytes written to the stream.
-		byte databyte = 0;					// The byte of data read from the file
+		int bytesread = 0;
+		int byteswritten = 0;
+		byte databyte = 0;
+		int id = 0;
+		long measurement = 0;
+		int i;
 
-		// Next we write a message to the terminal to let the world know we are alive...
 		System.out.print( "\n" + this.getName() + "::Middle Reading ");
 
 		while (true)
 		{
-			// Here we read a byte and write a byte
 			try
 			{
-				for (int i = 0; i < TOTAL_LENGTH; i++) {
-					buffer[i] = ReadFilterInputPort();
-				}
-				System.out.println();
-				// Extract altitude data (id == 2): 8 bytes starting at position 33
-				long altitudeMeasurement = 0;
-				for (int i = 0; i < ALTITUDE_LENGTH; i++) {
-					altitudeMeasurement = altitudeMeasurement | (buffer[ALTITUDE_START + i] & 0xFF);
-					if (i != ALTITUDE_LENGTH - 1) {
-						altitudeMeasurement = altitudeMeasurement << 8;
+				// Read ID (4 bytes)
+				byte[] idBytes = new byte[ID_LENGTH];
+				id = 0;
+				for (i = 0; i < ID_LENGTH; i++) {
+					idBytes[i] = ReadFilterInputPort();
+					id = id | (idBytes[i] & 0xFF);
+					if (i != ID_LENGTH - 1) {
+						id = id << 8;
 					}
+					bytesread++;
 				}
-				double altitude = Double.longBitsToDouble(altitudeMeasurement);
-				System.out.println("Altitude: " + String.format("%.5f", altitude));
-				databyte = ReadFilterInputPort();
-				bytesread++;
-				WriteFilterOutputPort(databyte);
+
+				// Read Measurement (8 bytes)
+				byte[] measurementBytes = new byte[MEASUREMENT_LENGTH];
+				measurement = 0;
+				for (i = 0; i < MEASUREMENT_LENGTH; i++) {
+					measurementBytes[i] = ReadFilterInputPort();
+					measurement = measurement | (measurementBytes[i] & 0xFF);
+					if (i != MEASUREMENT_LENGTH - 1) {
+						measurement = measurement << 8;
+					}
+					bytesread++;
+				}
+
+				// Process altitude if this is ID 2
+				byte altitudeAltered = 0;
+				if (id == 2) {
+					double altitude = Double.longBitsToDouble(measurement);
+					System.out.println("Altitude: " + String.format("%.5f", altitude));
+
+					// Detect altitude changes greater than JUMP_THRESHOLD
+					double altitudeChange = Math.abs(altitude - previousAltitude1);
+					if (frameCount > 1 && altitudeChange > JUMP_THRESHOLD) {
+						System.out.println("*** ALTITUDE JUMP DETECTED: " + String.format("%.5f", altitudeChange) + " feet ***");
+						altitude = (previousAltitude1 + previousAltitude2) / 2.0;
+						System.out.println("*** SMOOTHED TO: " + String.format("%.5f", altitude));
+						altitudeAltered = 1;
+						
+						// Convert smoothed altitude back to bytes
+						long smoothedMeasurement = Double.doubleToLongBits(altitude);
+						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
+							measurementBytes[MEASUREMENT_LENGTH - 1 - i] = (byte)((smoothedMeasurement >>> (i * 8)) & 0xFF);
+						}
+					}
+					
+					previousAltitude2 = previousAltitude1;
+					previousAltitude1 = altitude;
+					frameCount++;
+				}
+
+				// Write ID
+				for (i = 0; i < ID_LENGTH; i++) {
+					WriteFilterOutputPort(idBytes[i]);
+					byteswritten++;
+				}
+
+				// Write Measurement
+				for (i = 0; i < MEASUREMENT_LENGTH; i++) {
+					WriteFilterOutputPort(measurementBytes[i]);
+					byteswritten++;
+				}
+
+				// Write the flag byte
+				WriteFilterOutputPort(altitudeAltered);
 				byteswritten++;
 			}
 			catch (EndOfStreamException e)
