@@ -1,10 +1,9 @@
 /******************************************************************************************************************
 * File:Plumber.java
+* Project: Lab 1
 *
-* This class serves as an example to illstrate how to use the PlumberTemplate to create a main thread that
-* instantiates and connects a set of filters. This example consists of three filters: a source, a middle filter
-* that acts as a pass-through filter (it does nothing to the data), and a sink filter which illustrates all kinds
-* of useful things that you can do with the input stream of data.
+* Description:
+* This class connects the source, middle, and sink filters together to form the complete data processing pipeline.
 ******************************************************************************************************************/
 
 public class Plumber
