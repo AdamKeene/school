@@ -73,19 +73,23 @@ public class MiddleFilter extends FilterFramework
 
 						// Send wild point data through pipe with ID=5
 						int wildId = 5;
+						// Convert wild ID to bytes
 						long wildMeasurement = Double.doubleToLongBits(originalAltitude);
 						byte[] wildIdBytes = new byte[ID_LENGTH];
 						for (i = 0; i < ID_LENGTH; i++) {
 							wildIdBytes[ID_LENGTH - 1 - i] = (byte)((wildId >>> (i * 8)) & 0xFF);
 						}
+						// Write wild ID bytes
 						for (i = 0; i < ID_LENGTH; i++) {
 							WriteFilterOutputPort(wildIdBytes[i]);
 							byteswritten++;
 						}
+						// Convert wild measurement to bytes
 						byte[] wildMeasurementBytes = new byte[MEASUREMENT_LENGTH];
 						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
 							wildMeasurementBytes[MEASUREMENT_LENGTH - 1 - i] = (byte)((wildMeasurement >>> (i * 8)) & 0xFF);
 						}
+						// Write wild measurement bytes
 						for (i = 0; i < MEASUREMENT_LENGTH; i++) {
 							WriteFilterOutputPort(wildMeasurementBytes[i]);
 							byteswritten++;

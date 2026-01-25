@@ -129,7 +129,9 @@ public class SinkFilter extends FilterFramework
 				} else if (id == 4) {
 					temperature = Double.longBitsToDouble(measurement);
 				} else if (id == 5) {
-					wildPointsWriter.println(String.format("%.5f", Double.longBitsToDouble(measurement)));
+					String timeStr = TimeStampFormat.format(TimeStamp.getTime());
+					double wildAltitude = Double.longBitsToDouble(measurement);
+					wildPointsWriter.println(timeStr + "," + String.format("%.5f", velocity) + "," + wildAltitude + "," + String.format("%.5f", pressure) + "," + String.format("%.5f", temperature));
 				}
 			}
 			/*******************************************************************************

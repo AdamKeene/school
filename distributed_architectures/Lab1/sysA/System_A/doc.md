@@ -4,4 +4,13 @@ The only class which required changing from the example to suit the new system w
 
 ## Functionality
 
-System A implements a pipe-and-filter architecture to process flight data. The system incorporates three filters: SourceFilter which reads raw flight data, MiddleFilter which is a simple pass-through filter which can be modified to process data, and SinkFilter which records the data in OutputA.csv. The data processing pipeline is orchestrated by the Plumber class, which starts the filters and connects them to each other. These filters get their real time data processing functionality from the FilterFramework class, which enables the Plumber to connect to, send data to, and read data from them.
+System A implements a pipe-and-filter architecture to process flight data. The system incorporates three filters: SourceFilter which reads raw flight data, MiddleFilter which reads the data and passes it through, and SinkFilter which records the smoothed points in WildPoints.csv and flight data in OutputA.csv. The data processing pipeline is orchestrated by the Plumber class, which starts the filters and connects them to each other. These filters get their real time data processing functionality from the FilterFramework class, which enables the Plumber to connect to, send data to, and read data from them.
+
+## Usage
+
+In order to run the program, the Plumber class must be run from the System_B directory and input data must be named "FlightData.dat". Start the system using the following commands:
+
+```java
+javac *.java
+java Plumber
+```
