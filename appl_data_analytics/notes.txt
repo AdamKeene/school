@@ -1,0 +1,7 @@
+https://github.com/danhalligan/ISLRv2-solutions/tree/main
+https://www.statlearning.com/resources-first-edition
+
+flexible models in parametric approaches fit many functional forms but require estimating more parameters leading to overfitting ie following noise too closely
+non-parametric is cool because no explicit assumptions but requries more observations for accurate estimates
+restrictive models are more interpretable for inference, easier to distinguish the relationship of fewer variables
+sometimes we only care about prediction not interpretability, inflexible might still be better bc overfitting though
