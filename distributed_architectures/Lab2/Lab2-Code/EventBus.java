@@ -25,6 +25,7 @@ public class EventBus {
      * This class wraps the <code>Observable</code> class. It provides a way to set the changed flag
      * of an <code>Observable</code> object from outside.
      */
+    @SuppressWarnings("deprecation")
     public static class Event extends Observable {
 
         /**
@@ -97,6 +98,7 @@ public class EventBus {
      * @param iEventCode event to subscribe to
      * @param objSubscriber subscriber whose <code>update</code> method is to be invoked
      */
+    @SuppressWarnings("deprecation")
     public static void subscribeTo(int iEventCode, Observer objSubscriber) {
         aEvent[iEventCode].addObserver(objSubscriber);
     }
