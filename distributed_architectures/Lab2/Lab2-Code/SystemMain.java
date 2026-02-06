@@ -88,6 +88,9 @@ class SystemMain {
 			Logger logger = new Logger();
 			logger.initialize();
 
+			// Attach Overbooked listener so it runs inside the same system instance
+			new Overbooked(db);
+
 			// Start the system.
 			objClientInput.start();
 		} catch (FileNotFoundException e) {

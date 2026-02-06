@@ -23,6 +23,7 @@ public class Logger {
             this.name = name;
         }
 
+        // log events to log file
         @Override
         public void update(Observable o, Object arg) {
             String logMessage = "[" + getCurrentTime() + "] " + name + " : " + arg;
@@ -34,12 +35,14 @@ public class Logger {
     }
 
     public void initialize() {
+        // initialize log file
         try {
             logFile = new PrintWriter(new FileWriter("system.log", true), true);
         } catch (IOException e) {
             System.err.println("Failed to open log file: " + e.getMessage());
         }
-
+        
+        // subscribe to events
         EventBus.subscribeTo(EventBus.EV_LIST_ALL_STUDENTS,
             new EventLogger("EV_LIST_ALL_STUDENTS"));
         EventBus.subscribeTo(EventBus.EV_LIST_ALL_COURSES,
