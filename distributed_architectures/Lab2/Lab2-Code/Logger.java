@@ -1,37 +1,58 @@
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Observable;
 import java.util.Observer;
 
-public class Logger implements Observer { 
+@SuppressWarnings("deprecation")
+public class Logger {
 
-    @Override
-    public void update(Observable o, Object o1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private static PrintWriter logFile;
+
+    private static String getCurrentTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        return LocalDateTime.now().format(formatter);
     }
-// Implement Observer
-    @SuppressWarnings("deprecation")
-    private class LoggerObserver {
-        private int eventCode;
-        private String eventName;
-        
-        public LoggerObserver(int eventCode, String eventName) {
-            this.eventCode = eventCode;
-            this.eventName = eventName;
+
+    private static class EventLogger implements Observer {
+        private final String name;
+
+        EventLogger(String name) {
+            this.name = name;
         }
-        
+
+        @Override
         public void update(Observable o, Object arg) {
-            // Now we know which event this is!
-            System.out.println("Event '" + eventName + "' (code: " + eventCode + 
-                             ") fired with data: " + arg);
+            String logMessage = "[" + getCurrentTime() + "] " + name + " : " + arg;
+            if (logFile != null) {
+                logFile.println(logMessage);
+                logFile.flush();
+            }
         }
     }
-    
-    public void initialize() {
-        EventBus.subscribeTo(EventBus.EV_LIST_ALL_STUDENTS, this);
-        EventBus.subscribeTo(EventBus.EV_LIST_ALL_COURSES, this);
-        EventBus.subscribeTo(EventBus.EV_LIST_STUDENTS_REGISTERED, this);
-        EventBus.subscribeTo(EventBus.EV_LIST_COURSES_REGISTERED, this);
-        EventBus.subscribeTo(EventBus.EV_LIST_COURSES_COMPLETED, this);
-        EventBus.subscribeTo(EventBus.EV_REGISTER_STUDENT, this);
-    }
 
+    public void initialize() {
+        try {
+            logFile = new PrintWriter(new FileWriter("system.log", true), true);
+        } catch (IOException e) {
+            System.err.println("Failed to open log file: " + e.getMessage());
+        }
+
+        EventBus.subscribeTo(EventBus.EV_LIST_ALL_STUDENTS,
+            new EventLogger("EV_LIST_ALL_STUDENTS"));
+        EventBus.subscribeTo(EventBus.EV_LIST_ALL_COURSES,
+            new EventLogger("EV_LIST_ALL_COURSES"));
+        EventBus.subscribeTo(EventBus.EV_LIST_STUDENTS_REGISTERED,
+            new EventLogger("EV_LIST_STUDENTS_REGISTERED"));
+        EventBus.subscribeTo(EventBus.EV_LIST_COURSES_REGISTERED,
+            new EventLogger("EV_LIST_COURSES_REGISTERED"));
+        EventBus.subscribeTo(EventBus.EV_LIST_COURSES_COMPLETED,
+            new EventLogger("EV_LIST_COURSES_COMPLETED"));
+        EventBus.subscribeTo(EventBus.EV_REGISTER_STUDENT,
+            new EventLogger("EV_REGISTER_STUDENT"));
+        EventBus.subscribeTo(EventBus.EV_SHOW,
+            new EventLogger("EV_SHOW"));
+    }
 }

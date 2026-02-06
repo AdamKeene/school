@@ -84,6 +84,9 @@ class SystemMain {
 
 			ClientInput objClientInput = new ClientInput();
 			ClientOutput objClientOutput = new ClientOutput();
+			
+			Logger logger = new Logger();
+			logger.initialize();
 
 			// Start the system.
 			objClientInput.start();

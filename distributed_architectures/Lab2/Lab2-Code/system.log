@@ -1,0 +1,35 @@
+[2026-02-05 23:19:01.296] EV_SHOW : 
+Student Registration System
+
+[2026-02-05 23:19:01.300] EV_SHOW : 1) List all students
+[2026-02-05 23:19:01.300] EV_SHOW : 2) List all courses
+[2026-02-05 23:19:01.300] EV_SHOW : 3) List students who registered for a course
+[2026-02-05 23:19:01.300] EV_SHOW : 4) List courses a student has registered for
+[2026-02-05 23:19:01.300] EV_SHOW : 5) List courses a student has completed
+[2026-02-05 23:19:01.300] EV_SHOW : 6) Register a student for a course
+[2026-02-05 23:19:01.300] EV_SHOW : x) Exit
+[2026-02-05 23:19:01.300] EV_SHOW : 
+Enter your choice and press return >> 
+[2026-02-05 23:19:05.958] EV_SHOW : 
+
+[2026-02-05 23:19:05.959] EV_LIST_ALL_STUDENTS : null
+[2026-02-05 23:19:05.980] EV_SHOW : G00123456 Carson Kit CS 1 CS112 CS211 CS332 CS421
+G00123432 Smith John ECE 0 EE112 EE211 CS421 EE432
+G45643133 Kenton Sam IT 3 IT112 IT211
+G01234567 Boone Dan MBA 2 BB114 CS211 IT492 CS412
+G90123456 Crockett Jack CS 2 CS112 CS211 CS332 CS42
+G12998191 Wetzle Tom CS 3 CS112 CS211 CS332
+G21231422 Lewis Meriweather SE 1 EN121 EE211 BB222 CS421 IT492
+G89012345 Glass Hugh MBA 2 EN121 IT211
+[2026-02-05 23:19:05.980] EV_SHOW : 
+Student Registration System
+
+[2026-02-05 23:19:05.980] EV_SHOW : 1) List all students
+[2026-02-05 23:19:05.981] EV_SHOW : 2) List all courses
+[2026-02-05 23:19:05.981] EV_SHOW : 3) List students who registered for a course
+[2026-02-05 23:19:05.981] EV_SHOW : 4) List courses a student has registered for
+[2026-02-05 23:19:05.981] EV_SHOW : 5) List courses a student has completed
+[2026-02-05 23:19:05.981] EV_SHOW : 6) Register a student for a course
+[2026-02-05 23:19:05.981] EV_SHOW : x) Exit
+[2026-02-05 23:19:05.981] EV_SHOW : 
+Enter your choice and press return >> 

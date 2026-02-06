@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
  * @author Jung Soo Kim
  * @version 1.0
  */
+@SuppressWarnings("unchecked")
 public class Course {
 
     /**

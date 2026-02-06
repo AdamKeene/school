@@ -19,6 +19,7 @@ import java.util.ArrayList;
  * support writing student and course records to files. A shutdown means loss of all registration
  * information.
  */
+@SuppressWarnings("unchecked")
 public class DataBase {
 
     /**
