@@ -81,15 +81,19 @@ class SystemMain {
 					db,
 					EventBus.EV_REGISTER_STUDENT,
 					EventBus.EV_SHOW);
+			LoggerHandler objCommandEventHandler7 =
+				new LoggerHandler(
+					db,
+					EventBus.EV_LOGGER,
+					EventBus.EV_SHOW);
+			OverbookedHandler objCommandEventHandler8 =
+				new OverbookedHandler(
+					db,
+					EventBus.EV_REGISTER_STUDENT,
+					EventBus.EV_SHOW);
 
 			ClientInput objClientInput = new ClientInput();
 			ClientOutput objClientOutput = new ClientOutput();
-			
-			Logger logger = new Logger();
-			logger.initialize();
-
-			// Attach Overbooked listener so it runs inside the same system instance
-			new Overbooked(db);
 
 			// Start the system.
 			objClientInput.start();

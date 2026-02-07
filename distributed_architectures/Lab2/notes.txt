@@ -1,5 +1,6 @@
 @SuppressWarnings("deprecation") on clientoutput, commandeventhandler, eventbus
 initialize in systemmain.java
 data returns null except for show and register a student
+params comment copied from other class
 
 instantiated overbooked in main
