@@ -1,5 +1,6 @@
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 
 public class RegistrationConflictHandler extends CommandEventHandler {
@@ -9,11 +10,10 @@ public class RegistrationConflictHandler extends CommandEventHandler {
 
     protected String execute(String param) {
         // Get the student and course records.
-        String[] data = param.split(" ");
-        String sSID = data[0];
-        String sCID = data[1];
-        String sSection = data[2];
-
+        StringTokenizer objTokenizer = new StringTokenizer(param);
+        String sSID     = objTokenizer.nextToken();
+        String sCID     = objTokenizer.nextToken();
+        String sSection = objTokenizer.nextToken();
         
         Student objStudent = this.objDataBase.getStudentRecord(sSID);
         Course objCourse = this.objDataBase.getCourseRecord(sCID, sSection);       

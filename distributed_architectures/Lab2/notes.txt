@@ -3,4 +3,4 @@ initialize in systemmain.java
 data returns null except for show and register a student
 params comment copied from other class
 
-instantiated overbooked in main
+instantiated overbooked in main, couldve just listened for registration but assumes check happens before registering new student finishes which is questionable

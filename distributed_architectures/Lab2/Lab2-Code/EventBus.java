@@ -77,9 +77,14 @@ public class EventBus {
     public static final int EV_LOGGER = 7;
 
     /**
-     * Command event #8 definition: handle registration conflict. 
+     * Command event #8 definition: handle overbooked course. 
      */
-    public static final int EV_REGISTRATION_CONFLICT = 8;
+    public static final int EV_OVERBOOKED = 8;
+
+    /**
+     * Command event #9 definition: handle registration conflict. 
+     */
+    public static final int EV_REGISTRATION_CONFLICT = 9;
     
     /**
      * The number of defined events.

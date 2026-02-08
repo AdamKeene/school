@@ -577,3 +577,93 @@ Student Registration System
 [2026-02-07 18:31:27.085] EV_SHOW : x) Exit
 [2026-02-07 18:31:27.085] EV_SHOW : 
 Enter your choice and press return >> 
+[2026-02-07 18:45:57.877] EV_SHOW : 
+Student Registration System
+
+[2026-02-07 18:45:57.885] EV_SHOW : 1) List all students
+[2026-02-07 18:45:57.885] EV_SHOW : 2) List all courses
+[2026-02-07 18:45:57.885] EV_SHOW : 3) List students who registered for a course
+[2026-02-07 18:45:57.886] EV_SHOW : 4) List courses a student has registered for
+[2026-02-07 18:45:57.886] EV_SHOW : 5) List courses a student has completed
+[2026-02-07 18:45:57.886] EV_SHOW : 6) Register a student for a course
+[2026-02-07 18:45:57.886] EV_SHOW : x) Exit
+[2026-02-07 18:45:57.886] EV_SHOW : 
+Enter your choice and press return >> 
+[2026-02-07 18:46:01.619] EV_SHOW : 
+Enter student ID and press return >> 
+[2026-02-07 18:46:06.477] EV_SHOW : 
+Enter course ID and press return >> 
+[2026-02-07 18:46:09.985] EV_SHOW : 
+Enter course section and press return >> 
+[2026-02-07 18:46:11.907] EV_SHOW : 
+[2026-02-07 18:46:11.907] EV_SHOW : 
+
+[2026-02-07 18:46:11.908] EV_REGISTER_STUDENT : G00123456 CS112 a
+[2026-02-07 18:46:11.908] EV_SHOW : Successful!
+[2026-02-07 18:46:11.908] EV_SHOW : 
+[2026-02-07 18:46:11.909] EV_SHOW : 
+Student Registration System
+
+[2026-02-07 18:46:11.909] EV_SHOW : 1) List all students
+[2026-02-07 18:46:11.909] EV_SHOW : 2) List all courses
+[2026-02-07 18:46:11.910] EV_SHOW : 3) List students who registered for a course
+[2026-02-07 18:46:11.910] EV_SHOW : 4) List courses a student has registered for
+[2026-02-07 18:46:11.910] EV_SHOW : 5) List courses a student has completed
+[2026-02-07 18:46:11.911] EV_SHOW : 6) Register a student for a course
+[2026-02-07 18:46:11.911] EV_SHOW : x) Exit
+[2026-02-07 18:46:11.911] EV_SHOW : 
+Enter your choice and press return >> 
+[2026-02-07 18:55:42.155] EV_SHOW : 
+Student Registration System
+
+[2026-02-07 18:55:42.169] EV_SHOW : 1) List all students
+[2026-02-07 18:55:42.169] EV_SHOW : 2) List all courses
+[2026-02-07 18:55:42.170] EV_SHOW : 3) List students who registered for a course
+[2026-02-07 18:55:42.170] EV_SHOW : 4) List courses a student has registered for
+[2026-02-07 18:55:42.171] EV_SHOW : 5) List courses a student has completed
+[2026-02-07 18:55:42.171] EV_SHOW : 6) Register a student for a course
+[2026-02-07 18:55:42.173] EV_SHOW : x) Exit
+[2026-02-07 18:55:42.174] EV_SHOW : 
+Enter your choice and press return >> 
+[2026-02-07 18:55:48.763] EV_SHOW : 
+Enter student ID and press return >> 
+[2026-02-07 18:55:53.721] EV_SHOW : 
+Enter course ID and press return >> 
+[2026-02-07 18:56:01.322] EV_SHOW : 
+Enter course section and press return >> 
+[2026-02-07 18:56:46.797] EV_SHOW : 
+Student Registration System
+
+[2026-02-07 18:56:46.807] EV_SHOW : 1) List all students
+[2026-02-07 18:56:46.807] EV_SHOW : 2) List all courses
+[2026-02-07 18:56:46.807] EV_SHOW : 3) List students who registered for a course
+[2026-02-07 18:56:46.807] EV_SHOW : 4) List courses a student has registered for
+[2026-02-07 18:56:46.808] EV_SHOW : 5) List courses a student has completed
+[2026-02-07 18:56:46.808] EV_SHOW : 6) Register a student for a course
+[2026-02-07 18:56:46.809] EV_SHOW : x) Exit
+[2026-02-07 18:56:46.810] EV_SHOW : 
+Enter your choice and press return >> 
+[2026-02-07 18:56:52.557] EV_SHOW : 
+Enter student ID and press return >> 
+[2026-02-07 18:56:57.720] EV_SHOW : 
+Enter course ID and press return >> 
+[2026-02-07 18:57:00.194] EV_SHOW : 
+Enter course section and press return >> 
+[2026-02-07 18:57:01.934] EV_SHOW : balls
+[2026-02-07 18:57:01.934] EV_SHOW : 
+
+[2026-02-07 18:57:01.935] EV_REGISTER_STUDENT : G00123456 CS112 a
+[2026-02-07 18:57:01.935] EV_SHOW : Successful!
+[2026-02-07 18:57:01.936] EV_SHOW : 
+[2026-02-07 18:57:01.936] EV_SHOW : 
+Student Registration System
+
+[2026-02-07 18:57:01.936] EV_SHOW : 1) List all students
+[2026-02-07 18:57:01.937] EV_SHOW : 2) List all courses
+[2026-02-07 18:57:01.937] EV_SHOW : 3) List students who registered for a course
+[2026-02-07 18:57:01.937] EV_SHOW : 4) List courses a student has registered for
+[2026-02-07 18:57:01.937] EV_SHOW : 5) List courses a student has completed
+[2026-02-07 18:57:01.938] EV_SHOW : 6) Register a student for a course
+[2026-02-07 18:57:01.938] EV_SHOW : x) Exit
+[2026-02-07 18:57:01.938] EV_SHOW : 
+Enter your choice and press return >> 

@@ -89,7 +89,7 @@ class SystemMain {
 			OverbookedHandler objCommandEventHandler8 =
 				new OverbookedHandler(
 					db,
-					EventBus.EV_REGISTER_STUDENT,
+					EventBus.EV_OVERBOOKED,
 					EventBus.EV_SHOW);
 			RegistrationConflictHandler objCommandEventHandler9 =
 				new RegistrationConflictHandler(
