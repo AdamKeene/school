@@ -5,7 +5,6 @@
  *
  */
 
-import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 
@@ -48,15 +47,7 @@ public class RegisterStudentHandler extends CommandEventHandler {
             return "Invalid course ID or course section";
         }
 
-        // Check if the given course conflicts with any of the courses the student has registered.
-        ArrayList vCourse = objStudent.getRegisteredCourses();
-        for (int i=0; i<vCourse.size(); i++) {
-            if (((Course) vCourse.get(i)).conflicts(objCourse)) {
-                return "Registration conflicts";
-            }
-        }
-
-        // Request validated. Proceed to register.
+        // Proceed to register.
         this.objDataBase.makeARegistration(sSID, sCID, sSection);
         return "Successful!";
     }

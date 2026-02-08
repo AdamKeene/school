@@ -75,6 +75,11 @@ public class EventBus {
      * Command event #7 definition: log an event. 
      */
     public static final int EV_LOGGER = 7;
+
+    /**
+     * Command event #8 definition: handle registration conflict. 
+     */
+    public static final int EV_REGISTRATION_CONFLICT = 8;
     
     /**
      * The number of defined events.

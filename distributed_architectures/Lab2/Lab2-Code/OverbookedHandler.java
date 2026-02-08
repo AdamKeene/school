@@ -7,8 +7,6 @@ public class OverbookedHandler extends CommandEventHandler {
 
     @Override
     protected String execute(String param) {
-        EventBus.subscribeTo(EventBus.EV_SHOW, this);
-
         if (param == null) return "";
         String[] parts = param.split("\\s+");
         if (parts.length < 3) return "";
@@ -22,6 +20,6 @@ public class OverbookedHandler extends CommandEventHandler {
                 System.out.println("Course " + sCID + " section " + sSection + " is overbooked: " + count + " students");
             }
         }
-        return "";
+        return "balls";
     }
 }

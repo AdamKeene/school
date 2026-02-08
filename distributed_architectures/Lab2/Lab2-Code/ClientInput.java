@@ -111,7 +111,7 @@ public class ClientInput extends Thread {
 
                     // Announce the command event #5 with student ID, course ID, and course section.
                     EventBus.announce(EventBus.EV_SHOW, "\n");
-                    EventBus.announce(EventBus.EV_REGISTER_STUDENT, sSID + " " + sCID + " " + sSection);
+                    EventBus.announce(EventBus.EV_REGISTRATION_CONFLICT, sSID + " " + sCID + " " + sSection);
                     continue;
                 }
 
@@ -127,6 +127,7 @@ public class ClientInput extends Thread {
         catch (Exception e) {
             // Dump the exception information for debugging.
             e.printStackTrace();
+            System.out.println(e.getMessage());
             System.exit(1);
         }
     }

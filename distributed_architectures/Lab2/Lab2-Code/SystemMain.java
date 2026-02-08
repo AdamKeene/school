@@ -91,6 +91,11 @@ class SystemMain {
 					db,
 					EventBus.EV_REGISTER_STUDENT,
 					EventBus.EV_SHOW);
+			RegistrationConflictHandler objCommandEventHandler9 =
+				new RegistrationConflictHandler(
+					db,
+					EventBus.EV_REGISTRATION_CONFLICT,
+					EventBus.EV_SHOW);
 
 			ClientInput objClientInput = new ClientInput();
 			ClientOutput objClientOutput = new ClientOutput();
