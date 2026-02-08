@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -8,6 +7,7 @@ public class RegistrationConflictHandler extends CommandEventHandler {
         super(objDataBase, iCommandEvCode, iOutputEvCode);
     }
 
+    @Override
     protected String execute(String param) {
         // Get the student and course records.
         StringTokenizer objTokenizer = new StringTokenizer(param);

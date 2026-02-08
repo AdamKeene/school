@@ -108,9 +108,10 @@ public class ClientInput extends Thread {
                     String sCID = objReader.readLine().trim();
                     EventBus.announce(EventBus.EV_SHOW, "\nEnter course section and press return >> ");
                     String sSection = objReader.readLine().trim();
+                    // check if course is overbooked
                     EventBus.announce(EventBus.EV_OVERBOOKED, sCID + " " + sSection);
 
-                    // Announce the command event #5 with student ID, course ID, and course section.
+                    // begin conflict check and student registration chain with student ID, course ID, and course section.
                     EventBus.announce(EventBus.EV_SHOW, "\n");
                     EventBus.announce(EventBus.EV_REGISTRATION_CONFLICT, sSID + " " + sCID + " " + sSection);
                     continue;

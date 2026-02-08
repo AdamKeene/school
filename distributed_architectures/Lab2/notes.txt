@@ -1,6 +1,8 @@
 @SuppressWarnings("deprecation") on clientoutput, commandeventhandler, eventbus
-initialize in systemmain.java
+initialize in systemmain and eventbus
 data returns null except for show and register a student
 params comment copied from other class
 
 instantiated overbooked in main, couldve just listened for registration but assumes check happens before registering new student finishes which is questionable
+
+client input activates registration conflict handler which activates register student handler
