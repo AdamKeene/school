@@ -49,6 +49,8 @@ public class RegisterStudentHandler extends CommandEventHandler {
 
         // Proceed to register.
         this.objDataBase.makeARegistration(sSID, sCID, sSection);
+        // check if course is overbooked after registration
+        EventBus.announce(EventBus.EV_OVERBOOKED, sSID + " " +sCID + " " + sSection);
         return "Successful!";
     }
 }

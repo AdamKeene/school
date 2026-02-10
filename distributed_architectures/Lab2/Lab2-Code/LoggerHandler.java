@@ -44,6 +44,8 @@ public class LoggerHandler extends CommandEventHandler {
         EventBus.subscribeTo(EventBus.EV_LIST_COURSES_COMPLETED, new EventLogger("EV_LIST_COURSES_COMPLETED"));
         EventBus.subscribeTo(EventBus.EV_REGISTER_STUDENT, new EventLogger("EV_REGISTER_STUDENT"));
         EventBus.subscribeTo(EventBus.EV_SHOW, new EventLogger("EV_SHOW"));
+        EventBus.subscribeTo(EventBus.EV_OVERBOOKED, new EventLogger("EV_OVERBOOKED"));
+        EventBus.subscribeTo(EventBus.EV_REGISTRATION_CONFLICT, new EventLogger("EV_REGISTRATION_CONFLICT"));
     }
 
     @Override

@@ -12,6 +12,7 @@ public class OverbookedHandler extends CommandEventHandler {
         // retrieve parameters and course record
         if (param == null) return "";
         StringTokenizer objTokenizer = new StringTokenizer(param);
+        String sSID     = objTokenizer.nextToken();
         String sCID     = objTokenizer.nextToken();
         String sSection = objTokenizer.nextToken();
         Course c = this.objDataBase.getCourseRecord(sCID, sSection);
