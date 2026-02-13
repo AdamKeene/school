@@ -6,5 +6,7 @@ non-parametric is cool because no explicit assumptions but requries more observa
 restrictive models are more interpretable for inference, easier to distinguish the relationship of fewer variables
 sometimes we only care about prediction not interpretability, inflexible might still be better bc overfitting though
 
+The colon (:) is used to indicate an interaction between two or more variables in model formula. The asterisk (*) is use to indicate all main effects and interactions among the variables that it joins. 
+
 confidence vs prediction interval
 r squared, p value

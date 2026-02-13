@@ -36,4 +36,25 @@ summary(c)
 
 # d.
 par(mfrow = c(2, 2))
-plot(no_name, cex = 0.2)
+plot(autompg, cex = .1)
+# Yes, there are some outliers in the residuals data and there are some observations with abnormally high leverage. Observation 334 and 323 are the biggest outliers in the residuals data, and 117 has the highest leverage in the data.
+
+# e.
+summary(lm(formula = mpg ~ . * ., data = no_name))
+# acceleration:origin, displacement:year, and acceleration:year are the most significant relationships.
+summary(lm(formula = mpg~acceleration*origin+displacement*year+acceleration*year, data = no_name))
+
+# f.
+# I'm going to just use horsepower because it seems to be the most significant variable
+par(mfrow = c(2, 2))
+plot(Auto$horsepower, Auto$mpg, cex = .1)
+plot(log(Auto$horsepower), Auto$mpg, cex = .1)
+plot(sqrt(Auto$horsepower), Auto$mpg, cex = .1)
+plot(Auto$horsepower^2, Auto$mpg, cex = .1)
+# log plot looks the flattest
+
+summary(lm(mpg ~ horsepower, data = Auto))
+summary(lm(mpg ~ log(horsepower), data = Auto))
+# fitment gives .66 R^2 with log vs .61 without
+
+# 10.
