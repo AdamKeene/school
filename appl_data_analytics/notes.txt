@@ -5,3 +5,6 @@ flexible models in parametric approaches fit many functional forms but require e
 non-parametric is cool because no explicit assumptions but requries more observations for accurate estimates
 restrictive models are more interpretable for inference, easier to distinguish the relationship of fewer variables
 sometimes we only care about prediction not interpretability, inflexible might still be better bc overfitting though
+
+confidence vs prediction interval
+r squared, p value
