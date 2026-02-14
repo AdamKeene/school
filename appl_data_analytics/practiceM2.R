@@ -58,3 +58,53 @@ summary(lm(mpg ~ log(horsepower), data = Auto))
 # fitment gives .66 R^2 with log vs .61 without
 
 # 10.
+# a.
+summary(Carseats)
+seatsfit <- lm(Sales ~ Price + Urban + US, data = Carseats)
+# b.
+summary(seatsfit)
+# It is statistically proven that price increases lead to a .05 decrease in sales per unit of price, and being in the US leads to an expected increase in sales of 1.2 units.
+# The data suggests that being in an urban environment decreases sales by .02, but given the high P value there is no evidence of a correlation.
+# c.
+# Sales = 13.04 + -0.05 * Price - 0.02 * UrbanYes + 1.20 * USYes
+# d.
+# We can reject the null hypothesis for Price and USYes, but not for UrbanYes
+# e.
+seatssmall <- lm(Sales ~ Price + US, data = Carseats)
+summary(seatssmall)
+# f.
+# a: R^2 .2393, adjusted R^2 .2335
+# e: R^@ .2393, adjusted R^2 .2354
+# both models perform similarly, both had the same R^2 but e had a slightly higher adjusted R^2
+# g.
+confint(seatssmall, level = .95)
+# h.
+par(mfrow=c(2,2))
+plot(seatssmall)
+# There's a few points that could be called outliers or high leverage, but much less so than the outliers in the Auto dataset.
+
+# 15
+bostoncrim <- subset(Boston, select = -crim)
+summary(bostoncrim)
+# a.
+linearcrim <- lapply(bostoncrim, function(x) lm(Boston$crim ~ x))
+printCoefmat(do.call(rbind, lapply(linearcrim, function(x) coef(summary(x))[2, ])))
+# all predictors except for "chas" have a statistically significant association
+plot(Boston$chas, Boston$crim)
+plot(Boston$indus, Boston$crim)
+plot(Boston$nox, Boston$crim)
+plot(Boston$dis, Boston$crim)
+# plot for chas appears to be less correlated than the first three predictors with the lowest p values
+# b.
+regcrim <- lm(crim ~ ., data = Boston)
+summary(regcrim)
+# dis, rad, medv, and zn are the predictors with a statistically significant correlation
+plot(Boston$dis, Boston$crim)
+plot(Boston$rad, Boston$crim)
+plot(Boston$medv, Boston$crim)
+plot(Boston$zn, Boston$crim)
+# no linear looking relationships but clear correlation
+# c.
+plot(sapply(fits, function(x) coef(x)[2]), coef(regcrim)[-1], xlab = "univariate regression", ylab = "multiple regression", cex = .2)
+# One outlier nox
+# d.
