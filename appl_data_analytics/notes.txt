@@ -11,3 +11,6 @@ The colon (:) is used to indicate an interaction between two or more variables i
 look up confidence vs prediction interval, r squared, p value
 
 poly() is orthogonal polynomials, does the Y = β0 + β1X + β2X2 + β3X3 + ϵ formula by default
+
+pk(x) is posterior probability, chance x comes from class k
+spread (σ), averages (μ_k)
