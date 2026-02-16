@@ -106,5 +106,12 @@ plot(Boston$zn, Boston$crim)
 # no linear looking relationships but clear correlation
 # c.
 plot(sapply(fits, function(x) coef(x)[2]), coef(regcrim)[-1], xlab = "univariate regression", ylab = "multiple regression", cex = .2)
-# One outlier nox
+# One outlier: nox
 # d.
+# print fitments of each predictor
+qualonly <- setdiff(names(Boston), c("chas", "crim"))
+fits <- lapply(qualonly, function(p) {
+  lm(crim ~ poly(get(p), 3, raw = TRUE), data = Boston)
+})
+for (fit in fits) printCoefmat(coef(summary(fit)))
+# Yes, the cubic association is significant in indus, nox, age, dis, ptratio, and medv
