@@ -1,25 +1,29 @@
-# Changes
+# Lab3
 
-Three changes were made to the system: A logging component LoggerHandler was added to write logs to system.log, the component OverbookedHandler was added to detect when a student registers to a fully booked course (does not block registration), and the course conflict checking component of the RegisterStudentHandler component was separated into the new component RegistrationConflictHandler.
+## Changes:
 
-## Logger
+Lab 3 was changed to use an RMI architecture. The command handlers are now hosted on the server as IActivity services on port 1100, and the database managed by Database.java is now a remote database on port 1099. The ClientInput and ClientOutput classes were consolidated into one Client class responsible for invoking remote activities for the client machine. DBInterface was reworked to handle remote DB operations, and logging is now handled client-side in the Client class.
 
-The LoggerHandler simply subscribes to all events in the event bus and writes the result to the log file along with the time.
+## How to Run
 
-## Overbooked Handler
+This project requires three terminals to run: the client, server, and database.
 
-The OverbookedHandler is initialized with its own event type in SystemMain and the event bus in the same way as the rest of the components. The event is sent by the registration handler after a new student is registered, and after receiving the event the overbooked handler compares the number of students registered to the course, printing an alert to the console if there is a conflict. This component could alternatively listen for the registration handler event and check for one less than the limit, but assuming the overbooked handler retrieves the registered students faster than the registration handler updates it could potentially be prone to issues, even though in theory it should work. Waiting until the registration event is complete is a simpler and more reliable approach.
-
-## Conflict Handler
-
-The conflict handler also gets its own event type, and the client input component now sends that event when the user requests to register for a class instead of the registration event. If there is no conflict it sends the registration event directly from the conflict handler class. It would be possible to have the registration handler send the data and wait for a response before registering, but this approach would be both more complex and in my opinion less in the spirit of the implicit invocation architecture. Since the registration and conflict handlers are dependent on each other, it makes more sense to have a chain of events in sequence.
-
-## Running the System
-
-After unzipping the file and navigatin to the Lab2-Code directory, the project can be run using the following 2 commands:
-
-```java
+### Compile
+```bash
 javac *.java
+```
 
-java SystemMain Students.txt Courses.txt
+### On the database server:
+```bash
+java Database
+```
+
+### On the server:
+```bash
+java Server
+```
+
+### On the client machine:
+```bash
+java Client
 ```
