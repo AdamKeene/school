@@ -26,6 +26,7 @@ public class Server {
                 activityRegistry = LocateRegistry.createRegistry(1100);
             }
 
+            // Bind each activity by name for remote lookup
             activityRegistry.rebind("ListStudents", new ListStudentsActivity(db));
             activityRegistry.rebind("ListCourses", new ListCoursesActivity(db));
             activityRegistry.rebind("ListStudentsRegistered", new ListStudentsRegisteredActivity(db));
@@ -42,6 +43,7 @@ public class Server {
         }
     }
 
+// "List all students" command event handler
     private static class ListStudentsActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -49,6 +51,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "List all students" command
         @Override
         public String execute(String activity) throws RemoteException {
             ArrayList vStudent = this.db.getAllStudentRecords();
@@ -63,6 +66,7 @@ public class Server {
         }
     }
 
+    // "List all courses" command event handler
     private static class ListCoursesActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -70,6 +74,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "List all courses" command
         @Override
         public String execute(String activity) throws RemoteException {
             ArrayList vCourse = this.db.getAllCourseRecords();
@@ -84,6 +89,7 @@ public class Server {
         }
     }
 
+    // "List students who registered for a course" command event handler
     private static class ListStudentsRegisteredActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -91,6 +97,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "List students who registered for a course" command
         @Override
         public String execute(String activity) throws RemoteException {
             StringTokenizer objTokenizer = new StringTokenizer(activity);
@@ -113,6 +120,7 @@ public class Server {
         }
     }
 
+    // "List courses a student has registered for" command event handler
     private static class ListCoursesRegisteredActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -120,6 +128,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "List courses a student has registered for" command
         @Override
         public String execute(String activity) throws RemoteException {
             StringTokenizer objTokenizer = new StringTokenizer(activity);
@@ -141,6 +150,7 @@ public class Server {
         }
     }
 
+    // "List courses a student has completed" command event handler
     private static class ListCoursesCompletedActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -148,6 +158,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "List courses a student has completed" command
         @Override
         public String execute(String activity) throws RemoteException {
             StringTokenizer objTokenizer = new StringTokenizer(activity);
@@ -171,6 +182,7 @@ public class Server {
         }
     }
 
+    // "Register a student for a course" command event handler
     private static class RegisterStudentActivity extends UnicastRemoteObject implements IActivity {
         private final DBInterface db;
 
@@ -178,6 +190,7 @@ public class Server {
             this.db = db;
         }
 
+        // Process "Register a student for a course" command
         @Override
         public String execute(String activity) throws RemoteException {
             StringTokenizer objTokenizer = new StringTokenizer(activity);
