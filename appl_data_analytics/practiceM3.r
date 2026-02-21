@@ -1,6 +1,9 @@
 # 13 16
 library(MASS) # for lda()
 library(ISLR2)
+library(class) # for knn()
+# install.packages("e1071", dependencies = TRUE)
+library(e1071) # for naiveBayes()
 
 # 13
 # a.
@@ -43,4 +46,18 @@ lag2_qdatable
 sum(diag(lag2_qdatable)/ sum(lag2_qdatable))
 # now it's all positives
 # g.
-lag2_knn <- knn(Weekly[Lag2_train, "Lag2", drop=FALSE], Weekly[!train, "Lag2", drop=FALSE], Weekly$Direction[train])
+lag2_knn <- knn(Weekly[Lag2_train, "Lag2", drop=FALSE], Weekly[!Lag2_train, "Lag2", drop=FALSE], Weekly$Direction[Lag2_train], k=1)
+lag2_knntable <- table(lag2_knn, Weekly[!Lag2_train,]$Direction)
+lag2_knntable
+sum(diag(lag2_knntable))/sum(lag2_knntable)
+# .509 but even distribution
+# h.
+lag2_nb <- naiveBayes(Direction ~ Lag2, data = Weekly[Lag2_train,])
+lag2_nbpred <- predict(lag2_nb, Weekly[!Lag2_train,])
+lag2_nbtable <- table(lag2_nbpred, Weekly[!Lag2_train,]$Direction)
+lag2_nbtable
+sum(diag(lag2_nbtable))/sum(lag2_nbtable)
+# all positive again
+# i.
+# logistic regression and LDA had the best ratings, but KNN notably had the best distribution of positives and negatives.
+# j. 
