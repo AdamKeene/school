@@ -194,6 +194,7 @@ knn9 <- knn(knn_train, knn_test, Lag2_train$Direction, k = 9)
 knn9_tab <- table(knn9, Lag2_test$Direction)
 knn9_tab
 sum(diag(knn9_tab)) / sum(knn9_tab)
+# .538
 
 # 16
 # create binary response
@@ -231,22 +232,26 @@ lda_boston1 <- lda(high_crime ~ nox + rad + dis + lstat, data = boston_train)
 lda_boston1_tab <- table(predict(lda_boston1, boston_test)$class, boston_test$high_crime)
 lda_boston1_tab
 sum(diag(lda_boston1_tab)) / sum(lda_boston1_tab)
+# .855
 
 lda_boston2 <- lda(high_crime ~ . - crim, data = boston_train)
 lda_boston2_tab <- table(predict(lda_boston2, boston_test)$class, boston_test$high_crime)
 lda_boston2_tab
 sum(diag(lda_boston2_tab)) / sum(lda_boston2_tab)
+# .849
 
 # Naive Bayes
 nb_boston1 <- naiveBayes(high_crime ~ nox + rad + dis + lstat, data = boston_train)
 nb_boston1_tab <- table(predict(nb_boston1, boston_test), boston_test$high_crime)
 nb_boston1_tab
 sum(diag(nb_boston1_tab)) / sum(nb_boston1_tab)
+# .815
 
 nb_boston2 <- naiveBayes(high_crime ~ . - crim, data = boston_train)
 nb_boston2_tab <- table(predict(nb_boston2, boston_test), boston_test$high_crime)
 nb_boston2_tab
 sum(diag(nb_boston2_tab)) / sum(nb_boston2_tab)
+# .796
 
 # KNN with different K values
 knn_boston_train <- scale(boston_train[, c("nox", "rad", "dis", "lstat")])
@@ -258,34 +263,78 @@ knn_boston_k1 <- knn(knn_boston_train, knn_boston_test, boston_train$high_crime,
 knn_boston_k1_tab <- table(knn_boston_k1, boston_test$high_crime)
 knn_boston_k1_tab
 sum(diag(knn_boston_k1_tab)) / sum(knn_boston_k1_tab)
+# .928
 
 knn_boston_k5 <- knn(knn_boston_train, knn_boston_test, boston_train$high_crime, k = 5)
 knn_boston_k5_tab <- table(knn_boston_k5, boston_test$high_crime)
 knn_boston_k5_tab
 sum(diag(knn_boston_k5_tab)) / sum(knn_boston_k5_tab)
+# .921
 
 knn_boston_k10 <- knn(knn_boston_train, knn_boston_test, boston_train$high_crime, k = 10)
 knn_boston_k10_tab <- table(knn_boston_k10, boston_test$high_crime)
 knn_boston_k10_tab
 sum(diag(knn_boston_k10_tab)) / sum(knn_boston_k10_tab)
+# .914
 
-# FINDINGS:
-# Created binary response (high_crime) for crime above/below median. 
-# Used 70/30 train/test split. Tested with subset of key predictors (nox, rad, dis, lstat)
-# and with all predictors.
-#
-# Logistic Regression & LDA: Both gave similar results (linear decision boundaries).
-# All-predictor models typically performed best.
-#
-# Naive Bayes: Slightly worse than logistic/LDA, likely because predictors aren't
-# truly independent (e.g., rad and tax are correlated).
-#
-# KNN: K=1 tends to overfit, K=5-10 more stable. Standardization critical since
-# variables have different scales.
-#
-# Overall: Logistic regression and LDA with more predictors give best results.
-# .538
-
-# best is .625 on QDA with transformations, which had a high false positive rate
+# KNN best by far with .928 with k = 1
+# best outside of KNN is .625 on QDA with transformations, which had a high false positive rate
 
 #16
+
+# convert data to above/below median crime
+boston16 <- Boston
+crime_median <- median(boston16$crim)
+boston16$high_crime <- factor(ifelse(boston16$crim > crime_median, "Yes", "No"))
+
+# split train and test
+set.seed(16)
+train16 <- sample(1:nrow(boston16), nrow(boston16) * 0.7)
+train_b <- boston16[train16, ]
+test_b <- boston16[-train16, ]
+
+# logistic regression (small subset)
+log16 <- glm(high_crime ~ nox + rad + dis + lstat, data = train_b, family = binomial)
+log16_pred <- ifelse(predict(log16, test_b, type = "response") > 0.5, "Yes", "No")
+log16_tab <- table(log16_pred, test_b$high_crime)
+log16_tab
+sum(diag(log16_tab)) / sum(log16_tab)
+# .868
+
+# LDA (same subset)
+lda16 <- lda(high_crime ~ nox + rad + dis + lstat, data = train_b)
+lda16_tab <- table(predict(lda16, test_b)$class, test_b$high_crime)
+lda16_tab
+sum(diag(lda16_tab)) / sum(lda16_tab)
+# .842
+
+# naive Bayes (same subset)
+nb16 <- naiveBayes(high_crime ~ nox + rad + dis + lstat, data = train_b)
+nb16_tab <- table(predict(nb16, test_b), test_b$high_crime)
+nb16_tab
+sum(diag(nb16_tab)) / sum(nb16_tab)
+# .842
+
+# KNN (scaled predictors), try a few k values
+x_train16 <- scale(train_b[, c("nox", "rad", "dis", "lstat")])
+x_test16 <- scale(test_b[, c("nox", "rad", "dis", "lstat")], center = attr(x_train16, "scaled:center"), scale = attr(x_train16, "scaled:scale"))
+
+knn16_k1 <- knn(x_train16, x_test16, train_b$high_crime, k = 1)
+knn16_k5 <- knn(x_train16, x_test16, train_b$high_crime, k = 5)
+knn16_k10 <- knn(x_train16, x_test16, train_b$high_crime, k = 10)
+
+knn16_k1_tab <- table(knn16_k1, test_b$high_crime)
+knn16_k5_tab <- table(knn16_k5, test_b$high_crime)
+knn16_k10_tab <- table(knn16_k10, test_b$high_crime)
+
+knn16_k1_tab
+sum(diag(knn16_k1_tab)) / sum(knn16_k1_tab)
+# .928
+knn16_k5_tab
+sum(diag(knn16_k5_tab)) / sum(knn16_k5_tab)
+# .908
+knn16_k10_tab
+sum(diag(knn16_k10_tab)) / sum(knn16_k10_tab)
+# .901
+
+# KNN still the best but not by as much
