@@ -14,3 +14,5 @@ poly() is orthogonal polynomials, does the Y = β0 + β1X + β2X2 + β3X3 + ϵ f
 
 pk(x) is posterior probability, chance x comes from class k
 spread (σ), averages (μ_k)
+
+look up why knn was better on 3
