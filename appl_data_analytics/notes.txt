@@ -16,3 +16,5 @@ pk(x) is posterior probability, chance x comes from class k
 spread (σ), averages (μ_k)
 
 look up why knn was better on 3
+
+4-6: 8.1 page 333 (344)
