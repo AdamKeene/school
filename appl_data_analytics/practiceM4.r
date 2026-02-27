@@ -1,7 +1,6 @@
 library(ISLR2)
 library(MASS)
 library(randomForest)
-install.packages("tree")
 library(tree)
 
 df <- na.omit(Auto[, c("horsepower", "weight")])
@@ -125,9 +124,16 @@ legend("topright", c("m=p", "m=p/2", "m=sqrt(p)"), col = c("green", "red", "blue
 
 # 8
 # a.
-seatsTrain=sample(1:nrow(Carseats),nrow(Carseats)*7/10)
-seatsTest=Carseats[-seatsTrain,'Sales']
+seats = sample(dim(Carseats)[1], dim(Carseats)[1]/2)
+seatsTrain = Carseats[seats, ]
+seatsTest = Carseats[-seats, ]
 # b.
-seatsTree=tree(Sales~.,Carseats,subset=seatsTrain)
+seatsTree = tree(Sales ~ ., data = seatsTrain)
+summary(seatsTree)
 plot(seatsTree)
-text(seatsTree, pretty = 0)
+text(seatsTree, pretty=0)
+
+seatsPred = predict(seatsTree, seatsTest)
+mean((seatsTest$Sales - seatsPred)^2)
+# 4.843
+# c.
