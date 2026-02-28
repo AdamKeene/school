@@ -182,12 +182,49 @@ print(seatsBartMSE)
 
 # 9
 # a.
+?OJ
 ntrain <- sample(1:nrow(OJ), 800)
 ojTrain <- OJ[ntrain, ]
 ojTest <- OJ[-ntrain, ]
 # b.
-ojTree <- tree(Purchase ~ ., ojTrain)
-summary(ojTree)
+orangeTree <- tree(Purchase ~ ., ojTrain)
+summary(orangeTree)
 # 16.88% error, 10 terminal nodes
 # c.
-ojTree
+orangeTree
+# 2) LoyalCH is one of 8 times LoyalCH appears in the tree. It has a splitting value of .504, there are 365 points below it, the deviance for all points below it is 441.6, and the prediction for this subset is MM at 70.69% compared to 29.32% CH.
+# d.
+plot(orangeTree)
+text(orangeTree, pretty=0)
+# LoyalCH is quite important being all over the upper half of the tree, PriceDiff is also important, not much else matters. Loyalty to Citrus Hill matters much more than to Minute Maid, and the only other thing that matters is price.
+# e.
+ojPred <- predict(orangeTree, ojTest, type="class")
+ojTable <- table(ojTest$Purchase, ojPred)
+ojTable
+1-sum(diag(ojTable)/sum(ojTable))
+# f.
+ojCV <- cv.tree(orangeTree)
+ojCV
+# 9 has the smallest standard deviance at 685
+# g.
+plot(ojCV$size, ojCV$dev, type = "b", xlab = "size", ylab = "deviance")
+# h.
+# 6, 7, and 9 are tied for the lowest
+# i.
+prunedOrangeTree <- prune.tree(orangeTree, best = 7)
+plot(prunedOrangeTree)
+text(prunedOrangeTree, pretty=0)
+# j.
+summary(prunedOrangeTree)
+# The misclassification error rate is 16.25%, which is slightly better than the original 17.04%
+# k.
+ojPredUnpruned = predict(orangeTree, ojTest, type = "class")
+unprunedMisclass = sum(ojTest$Purchase != ojPredUnpruned)
+unprunedMisclass/length(ojPredUnpruned)
+# .1704
+ojPredPruned = predict(prunedOrangeTree, ojTest, type = "class")
+prunedMisclass = sum(ojTest$Purchase != ojPredPruned)
+prunedMisclass/length(ojPredPruned)
+# .1630
+# pruned wins with a .0074 improvement
+
