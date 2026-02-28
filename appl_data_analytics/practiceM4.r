@@ -2,6 +2,8 @@ library(ISLR2)
 library(MASS)
 library(randomForest)
 library(tree)
+library(BART)
+set.seed(1)
 
 df <- na.omit(Auto[, c("horsepower", "weight")])
 
@@ -135,5 +137,57 @@ text(seatsTree, pretty=0)
 
 seatsPred = predict(seatsTree, seatsTest)
 mean((seatsTest$Sales - seatsPred)^2)
-# 4.843
+# 4.922
 # c.
+seatsCV = cv.tree(seatsTree, FUN = prune.tree)
+par(mfrow = c(1, 2))
+plot(seatsCV$size, seatsCV$dev, type = "b")
+plot(seatsCV$k, seatsCV$dev, type = "b")
+
+seatsPruned = prune.tree(seatsTree, best = 9)
+par(mfrow = c(1, 1))
+plot(seatsPruned)
+text(seatsPruned, pretty = 0)
+seatsPredPruned = predict(seatsPruned, seatsTest)
+mean((seatsTest$Sales - seatsPredPruned)^2)
+# 4.918, barely improved
+# d.
+seatsBagging = randomForest(Sales ~ ., data = seatsTrain, mtry = 10, ntree = 500, importance = T)
+seatsPred = predict(seatsBagging, seatsTest)
+mean((seatsTest$Sales - seatsPred)^2)
+# 2.657, significant improvement
+importance(seatsBagging)
+# Price and ShelveLoc are the most important
+# e.
+seatsForest = randomForest(Sales ~ ., data = seatsTrain, mtry = 5, ntree = 500, importance = T)
+seatsPredForest = predict(seatsForest, seatsTest)
+mean((seatsTest$Sales - seatsPredForest)^2)
+# 2.701 also good
+importance(seatsForest)
+# Price and ShelveLoc are still most important
+# f.
+full_x = rbind(subset(seatsTrain, select = -Sales), subset(seatsTest, select = -Sales))
+mm = model.matrix(~ . - 1, data = full_x)
+ntrain = nrow(seatsTrain)
+bartTrain = mm[1:ntrain, , drop = FALSE]
+bartTest  = mm[(ntrain + 1):nrow(mm), , drop = FALSE]
+salesTrain = seatsTrain$Sales
+
+seatsBart = gbart(bartTrain, salesTrain, bartTest = bartTest, ntree = 200, ndpost = 2000, nskip = 500)
+seatsBartPred = seatsBart$yhat.test.mean
+seatsBartMSE = mean((seatsTest$Sales - seatsBartPred)^2)
+print(seatsBartMSE)
+# 1.409
+# significant improvement
+
+# 9
+# a.
+ntrain <- sample(1:nrow(OJ), 800)
+ojTrain <- OJ[ntrain, ]
+ojTest <- OJ[-ntrain, ]
+# b.
+ojTree <- tree(Purchase ~ ., ojTrain)
+summary(ojTree)
+# 16.88% error, 10 terminal nodes
+# c.
+ojTree
