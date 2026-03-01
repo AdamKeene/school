@@ -3,6 +3,8 @@ library(MASS)
 library(randomForest)
 library(tree)
 library(BART)
+library(gbm)
+library(glmnet)
 set.seed(1)
 
 df <- na.omit(Auto[, c("horsepower", "weight")])
@@ -229,3 +231,96 @@ prunedMisclass/length(ojPredPruned)
 # pruned wins with a .0074 improvement
 
 # 10
+# #a.
+sum(is.na(Hitters$Salary))
+# 59
+hitData <- Hitters
+hitData <- hitData[!is.na(hitData$Salary), ]
+hitData$Salary <- log(hitData$Salary)
+# b.
+trainRange = 1:200
+hitTrain = hitData[trainRange, ]
+hitTest = hitData[-trainRange, ]
+# c.
+lambdas <- 10^seq(-3, 0, by = 0.1)
+trainMSE <- numeric(length(lambdas))
+testMSE <- numeric(length(lambdas))
+
+for (i in seq_along(lambdas)) {
+  fit <- gbm(Salary ~ ., data = hitTrain, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[i])
+  trainPred <- predict(fit, hitTrain, n.trees = 1000)
+  testPred <- predict(fit, hitTest, n.trees = 1000)
+  trainMSE[i] <- mean((hitTrain$Salary - trainPred)^2)
+  testMSE[i] <- mean((hitTest$Salary - testPred)^2)
+}
+
+plot(lambdas, trainMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
+# d.
+plot(lambdas, testMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
+# e.
+min(testMSE)
+# .2531
+hitLinReg <- lm(Salary ~ ., data = hitData[trainRange, ])
+mean((predict(linreg, hitData[trainRange, ]) - hitData[trainRange, "Salary"])^2)
+# .3204
+x = model.matrix(Salary ~ ., data = hitTrain)
+y = hitTrain$Salary
+xTest = model.matrix(Salary ~ ., data = hitTest)
+lasso.fit = glmnet(x, y, alpha = 1)
+lasso.pred = predict(lasso.fit, s = 0.01, newx = xTest)
+mean((hitTest$Salary - lasso.pred)^2)
+# .4701
+# both methods performed worse
+# f.
+summary(gbm(Salary ~ ., data = hitTrain, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[which.min(testMSE)]))
+# CAtBat and CRBI are most important predictors
+# g.
+hitRF = randomForest(Salary ~ ., data = hitTrain, ntree = 500, mtry = 19)
+hitPred = predict(hitRF, hitTest)
+mean((hitTest$Salary - hitPred)^2)
+# .2286
+
+# 12
+# Use College data to predict application demand: log(Apps)
+collegeData = na.omit(College)
+collegeData$logApps = log(collegeData$Apps)
+collegeData$Apps = NULL
+
+n = nrow(collegeData)
+trainIdx = sample(1:n, n/2)
+collegeTrain = collegeData[trainIdx, ]
+collegeTest = collegeData[-trainIdx, ]
+
+# Boosting
+collegeBoost = gbm(logApps ~ ., data = collegeTrain, distribution = "gaussian", n.trees = 1000, shrinkage = 0.01)
+boostPred = predict(collegeBoost, newdata = collegeTest, n.trees = 1000)
+mean((collegeTest$logApps - boostPred)^2)
+# .0466
+
+# bagging
+predCount = ncol(collegeTrain) - 1
+collegeBag = randomForest(logApps ~ ., data = collegeTrain, mtry = predCount, ntree = 500)
+bagPred = predict(collegeBag, newdata = collegeTest)
+mean((collegeTest$logApps - bagPred)^2)
+# .0482
+
+# random forest
+collegeRF = randomForest(logApps ~ ., data = collegeTrain, mtry = floor(sqrt(predCount)), ntree = 500)
+rfPred = predict(collegeRF, newdata = collegeTest)
+mean((collegeTest$logApps - rfPred)^2)
+# .0611
+
+# BART
+allX = rbind(subset(collegeTrain, select = -logApps), subset(collegeTest, select = -logApps))
+allMM = model.matrix(~ . - 1, data = allX)
+nTrain = nrow(collegeTrain)
+bartTrainX = allMM[1:nTrain, , drop = FALSE]
+bartTestX = allMM[(nTrain + 1):nrow(allMM), , drop = FALSE]
+bartY = collegeTrain$logApps
+
+collegeBART = gbart(bartTrainX, bartY, x.test = bartTestX, ntree = 200, ndpost = 1000, nskip = 200)
+bartPred = collegeBART$yhat.test.mean
+mean((collegeTest$logApps - bartPred)^2)
+# .0582
+
+# boosting and bagging performed best
