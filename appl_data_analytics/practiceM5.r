@@ -43,27 +43,52 @@ plotb + geom_point(aes(color = (1 + X1)^2 + (2 - X2)^2 - 4 > 0), size = 0.1)
 
 # 3
 # a.
-data <- data.frame(
-  X1 = c(3, 2, 4, 1, 2, 4, 4),
-  X2 = c(4, 2, 4, 4, 1, 3, 1),
-  Y  = c(rep("Red", 4), rep("Blue", 3))
-)
-mmcplot <- ggplot(data, aes(x = X1, y = X2, color = Y)) +
-  geom_point(size = 2) +
-  scale_colour_identity() +
-  coord_cartesian(xlim = c(0.5, 4.5), ylim = c(0.5, 4.5))
-mmcplot
-# b.
-fit <- svm(as.factor(Y) ~ ., data = data, kernel = "linear", cost = 10, scale = FALSE)
+x1 <- c(3, 2, 4, 1, 2, 4, 4)
+x2 <- c(4, 2, 4, 4, 1, 3, 1)
+y  = c(rep("Red", 4), rep("Blue", 3))
 
-# Extract beta_0, beta_1, beta_2
-beta <- c(
-  -fit$rho,
-  drop(t(fit$coefs) %*% as.matrix(data[fit$index, 1:2]))
-)
-names(beta) <- c("B0", "B1", "B2")
-p <- p + geom_abline(intercept = -beta[1] / beta[3], slope = -beta[2] / beta[3], lty = 2)
-p
+svm_training_data <- data.frame(x1 = x1, x2 = x2, y = y)
+
+svmPoints <- ggplot(svm_training_data, aes(x = x1, y = x2, color = y)) +
+  geom_point(size = 3) +
+  coord_cartesian(xlim = c(0, 5), ylim = c(0, 5)) +
+  scale_color_identity()
+svmPoints
+
+# b.
+svmModel <- svm(y ~ x1 + x2, data = svm_training_data, kernel = "linear", cost = 1e5, scale = FALSE)
+hyperplaneWeights <- drop(t(svmModel$coefs) %*% as.matrix(svm_training_data[svmModel$index, c("x1", "x2")]))
+hyperplaneIntercept <- -svmModel$rho
+
+cat(sprintf("%.4f + %.4f*x1 + %.4f*x2 = 0\n", hyperplaneIntercept, hyperplaneWeights[1], hyperplaneWeights[2]))
+# 1.0004 + -1.9998*x1 + 1.9997*x2 = 0
+
+svmPoints + geom_abline(intercept = -hyperplaneIntercept / hyperplaneWeights[2], slope = -hyperplaneWeights[1] / hyperplaneWeights[2], linetype = "dashed")
+# c.
+# Classify to Red if β0 + β1X1 + β2X2 > 0, and classify to Blue otherwise, where β0=1, β1=−2, β2=2
+# d.
+decisionBoundarySlope <- -hyperplaneWeights[1] / hyperplaneWeights[2]
+decisionBoundaryIntercept <- -hyperplaneIntercept / hyperplaneWeights[2]
+upperMarginIntercept <- (1 - hyperplaneIntercept) / hyperplaneWeights[2]
+lowerMarginIntercept <- (-1 - hyperplaneIntercept) / hyperplaneWeights[2]
+
+supportVectorData <- svm_training_data[svmModel$index, ]
+
+svmWithMMH <- svmPoints +
+  geom_abline(intercept = decisionBoundaryIntercept, slope = decisionBoundarySlope, linetype = "dashed") +
+  geom_abline(intercept = upperMarginIntercept, slope = decisionBoundarySlope, linetype = "dotted") +
+  geom_abline(intercept = lowerMarginIntercept, slope = decisionBoundarySlope, linetype = "dotted")
+svmWithMMH
+# e.
+svmFinal <- svmWithMMH + geom_point(data = supportVectorData, aes(x = x1, y = x2), shape = 1, size = 4, stroke = 1.2, inherit.aes = FALSE)
+svmFinal
+# f.
+# the 7th data point is at (4,1) which is far from the margin making it not a support vector, therefore small changes will not affect the hyperplane calculation
+# g.
+svmPoints + geom_abline(intercept = -0.1, slope = 1)
+# 0.1 - x1 + x2 = 0
+# h.
+svmPoints + geom_point(aes(x = 3, y = 1), color = "red", size = 3)
 # 4
 # 5
 # 7
