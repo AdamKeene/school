@@ -90,5 +90,16 @@ svmPoints + geom_abline(intercept = -0.1, slope = 1)
 # h.
 svmPoints + geom_point(aes(x = 3, y = 1), color = "red", size = 3)
 # 4
+data <- data.frame(
+  x = runif(100),
+  y = runif(100)
+)
+score <- (2 * data$x - 0.5)^2 + (data$y)^2 - 0.5
+data$class <- factor(ifelse(score > 0, "red", "blue"))
+
+p <- ggplot(data, aes(x = x, y = y, color = class)) +
+  geom_point(size = 2) +
+  scale_colour_identity()
+p
 # 5
 # 7
