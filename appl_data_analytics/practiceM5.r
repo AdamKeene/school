@@ -90,16 +90,48 @@ svmPoints + geom_abline(intercept = -0.1, slope = 1)
 # h.
 svmPoints + geom_point(aes(x = 3, y = 1), color = "red", size = 3)
 # 4
-data <- data.frame(
+simData <- data.frame(
   x = runif(100),
   y = runif(100)
 )
-score <- (2 * data$x - 0.5)^2 + (data$y)^2 - 0.5
-data$class <- factor(ifelse(score > 0, "red", "blue"))
 
-p <- ggplot(data, aes(x = x, y = y, color = class)) +
+score <- (2 * simData$x)^2 + (simData$y)^2 - 1
+simData$class <- factor(ifelse(score > 0, "red", "blue"))
+
+simPlot <- ggplot(simData, aes(x = x, y = y, color = class)) +
   geom_point(size = 2) +
   scale_colour_identity()
-p
+simPlot
+
+train <- 1:50
+test <- 51:100
+
+err <- function(model, dat) {
+  pred <- predict(model, dat)
+  mean(pred != dat$class)
+}
+
+simRadial <- svm(class ~ ., data = simData[train, ], kernel = "radial")
+simRadialPred <- predict(simRadial, simData[test, ])
+err(simLinear, simData[test, ])
+# .06
+err(simRadial, simData[train, ])
+# .02
+plot(simRadial, simData)
+
+simPolynomial <- svm(class ~ ., data = simData[train, ], kernel = "polynomial", degree = 2)
+simPolynomialPred <- predict(simPolynomial, simData[test, ])
+mean(simPolynomialPred != simData$class[test])
+# .4
+plot(simPolynomial, simData)
+
+simLinear <- svm(class ~ ., data = simData[train, ], kernel = "linear")
+simLinearPred <- predict(simLinear, simData[test, ])
+mean(simLinearPred != simData$class[test])
+# .06
+plot(simLinear, simData)
+
+# Radial performs best closely followed by linear, Polynomial did the worst. 
+
 # 5
 # 7
