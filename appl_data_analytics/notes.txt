@@ -16,6 +16,11 @@ why no discernable pattern in 8c?
 9. cor() makes correlation coefficients -1 to 1, the lm has a few significant values, log looks flattest, we want the most linear plot with more even distribution because we're doing a linear regression so we optimize for the straight line, here we get a modest improvement on our r^2, r^2 is variance we can explain using the variables
 10. we have three significant variables, we get the values for the equation from the coefficients section in summary, doing it again with just the good predictors gives us effectively the same re, sults but with a smaller model as we can see from the adjusted R^2. This residuals chart is much closer to what we expect from a linear model than before, clusters where they should be and no discernable patterns, we can see a few outliers in the last plot but not too bad
 15. this function applies lm() to each predictor to predict crim, plot: plot for chas isn't clearly showing a relationship, it's the only one from the data without an association, others don't look linear but there is an association, plot: different coefficients nox is all the way over there. this equation fits all the predictors in a cubic regression model and we get multiple significant variables, showing those variables have a nonlinear relationship
+m3
+1. this is the logistic function which is used for finding probabilities of binary responses, and when we rearrange it the odds of success are an exponential function of X
+2. the first function selects for the highest probability of being the correct classification, and the second selects the class with the highest discriminant score which is a scoring method that uses the mean, shared variance, and class prior, which is like baseline statistics on the data. turns out they always select the same classification because after you drop terms that are always the same and log transform it you get the other equation
+4. when you add dimensions to a model meaning adding predictors each data point gets farther apart which makes using the nearest neighbors more difficult
+
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
 https://www.statlearning.com/resources-first-edition

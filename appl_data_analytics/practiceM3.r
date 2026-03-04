@@ -1,15 +1,15 @@
 # 13 16
-library(MASS) # for lda()
+library(MASS)
 library(ISLR2)
-library(class) # for knn()
-# install.packages("e1071", dependencies = TRUE)
-library(e1071) # for naiveBayes()
+library(class)
+library(e1071)
 
 # 13
 # a.
 summary(Weekly)
 plot(Weekly, cex=.1)
 # year and volume have a particularly strong association
+par(mfrow=c(1,1))
 plot(Weekly$Year, Weekly$Volume)
 # b.
 direction_reg <- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
