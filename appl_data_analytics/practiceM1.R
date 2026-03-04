@@ -28,7 +28,8 @@ plot(college$Grad.Rate ~ factor(college$Elite))
 # schools with elite students cost more and have higher graduation rates
 
 # Question 9
-auto <- read.csv('~/Documents/Auto.csv', na.strings = '?')
+library(ISLR2)
+auto <- Auto
 auto <- na.omit(auto)
 summary(auto)
 
@@ -68,8 +69,6 @@ barplot(c(other_mean, gm_mean), names.arg = c("Others", "GM"), ylab = "mpg")
 
 # Question 10
 #a
-# install.packages("ISLR2")
-library(ISLR2)
 Boston
 View(Boston)
 ?Boston
@@ -101,3 +100,27 @@ head(sortbytax, 20)
 hist(Boston[Boston$ptratio>1,]$ptratio, breaks=20)
 sortbypt <- Boston[order(Boston$ptratio, decreasing = TRUE), ]
 head(sortbypt, 20)
+# most ratios are in the low 20s by a large margin, the rest of the results are scattered.
+
+#e
+sum(Boston$chas)
+
+#f
+median(Boston$ptratio)
+
+#g
+summary(Boston$medv)
+Boston[Boston$medv == min(Boston$medv), ]
+# 399 and 406 are tied for the lowest home values at 5, compared to the median at 21.2. Crime rate is pretty bad compared to the average in these cities but it's not the worst.
+
+#h
+sum(Boston$rm > 7)
+# 64
+sum(Boston$rm > 8)
+# 13
+summary(Boston)
+summary(Boston[Boston$rm > 7, ])
+# crime is lower, average age is lower, there are more 25k sq ft residential lots, and average property tax is lower compared to the average.
+summary(Boston[Boston$rm > 8, ])
+# there are much fewer results than with 7, crime is higher, average age is higher, there are more 25k sq ft lots, and property tax is lower compared to the average.
+# there is a big difference in the variables between 7 and 8

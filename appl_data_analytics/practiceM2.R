@@ -30,13 +30,13 @@ pairs(Auto)
 no_name = subset(Auto, select = -name)
 cor(no_name)
 # c.
-c <- lm(mpg ~ ., data = no_name)
-summary(c)
+mpglreg <- lm(mpg ~ ., data = no_name)
+summary(mpglreg)
 # Yes, some predictors have a relationship, particularly displacement, weight, year, and origin. The coefficient for year, .75, suggests mpg increases by .75 every year.
 
 # d.
 par(mfrow = c(2, 2))
-plot(autompg, cex = .1)
+plot(mpglreg, cex = .1)
 # Yes, there are some outliers in the residuals data and there are some observations with abnormally high leverage. Observation 334 and 323 are the biggest outliers in the residuals data, and 117 has the highest leverage in the data.
 
 # e.
@@ -45,7 +45,7 @@ summary(lm(formula = mpg ~ . * ., data = no_name))
 summary(lm(formula = mpg~acceleration*origin+displacement*year+acceleration*year, data = no_name))
 
 # f.
-# I'm going to just use horsepower because it seems to be the most significant variable
+# Horsepower seems to be the most significant variable
 par(mfrow = c(2, 2))
 plot(Auto$horsepower, Auto$mpg, cex = .1)
 plot(log(Auto$horsepower), Auto$mpg, cex = .1)
@@ -105,7 +105,16 @@ plot(Boston$medv, Boston$crim)
 plot(Boston$zn, Boston$crim)
 # no linear looking relationships but clear correlation
 # c.
-plot(sapply(fits, function(x) coef(x)[2]), coef(regcrim)[-1], xlab = "univariate regression", ylab = "multiple regression", cex = .2)
+# c.
+uni_coef <- sapply(linearcrim, function(m) coef(m)[2])
+multi_coef <- coef(regcrim)[-1]
+
+par(mfrow=c(1,1))
+plot(uni_coef, multi_coef,
+     xlab = "univariate regression",
+     ylab = "multiple regression",
+     pch = 19, cex = 0.8)
+text(uni_coef, multi_coef, labels = names(uni_coef), pos = 3, cex = 0.5)
 # One outlier: nox
 # d.
 # print fitments of each predictor
