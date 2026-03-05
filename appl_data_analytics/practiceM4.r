@@ -100,6 +100,7 @@ text(xR5, y4 - 0.03, "R5")
 text(xR6, y4 - 0.03, "R6")
 
 # 3
+par(mfrow=c(1,1))
 prange = seq(0, 1, 0.01)
 gini = prange * (1 - prange) * 2
 entropy = -(prange * log(prange) + (1 - prange) * log(1 - prange))
@@ -107,7 +108,6 @@ class.err = 1 - pmax(prange, 1 - prange)
 matplot(prange, cbind(gini, entropy, class.err), type = "l", lty = 1, col = c("red" ,"green", "blue"))
 
 # 7
-# Construct the train and test matrices
 boston_train = sample(dim(Boston)[1], dim(Boston)[1]/2)
 x_train = Boston[boston_train, -14]
 x_test = Boston[-boston_train, -14]

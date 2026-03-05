@@ -20,6 +20,10 @@ m3
 1. this is the logistic function which is used for finding probabilities of binary responses, and when we rearrange it the odds of success are an exponential function of X
 2. the first function selects for the highest probability of being the correct classification, and the second selects the class with the highest discriminant score which is a scoring method that uses the mean, shared variance, and class prior, which is like baseline statistics on the data. turns out they always select the same classification because after you drop terms that are always the same and log transform it you get the other equation
 4. when you add dimensions to a model meaning adding predictors each data point gets farther apart which makes using the nearest neighbors more difficult
+13. logistic regression is discriminative meaning it directly learns boundaries between classes, as opposed to LDA QDA Bayes which are generative meaning modeling how features are distributed in each class, and it produces a linear decision boundary meaning it uses probability thresholds, 
+LDA uses discriminant function from question 2, generative model that uses a linear decision boundary
+QDA same thing but quadratic boundary
+Naive Bayes assumes once the class is found other features are unrelated, which is often untrue, still provides good results sometimes especially with poorly calibrated probabilities or other imperfect assumptions
 
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
