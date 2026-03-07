@@ -108,23 +108,30 @@ class.err = 1 - pmax(prange, 1 - prange)
 matplot(prange, cbind(gini, entropy, class.err), type = "l", lty = 1, col = c("red" ,"green", "blue"))
 
 # 7
-boston_train = sample(dim(Boston)[1], dim(Boston)[1]/2)
-x_train = Boston[boston_train, -14]
-x_test = Boston[-boston_train, -14]
-y_train = Boston[boston_train, 14]
-y_test = Boston[-boston_train, 14]
+boston_train <- sample(nrow(Boston), nrow(Boston) / 2)
+x_train <- Boston[boston_train, -14]
+x_test  <- Boston[-boston_train, -14]
+y_train <- Boston[boston_train, 14]
+y_test  <- Boston[-boston_train, 14]
 
-p = dim(Boston)[2] - 1
-p_div = p/2
-p_sq = sqrt(p)
-rf_p = randomForest(x_train, y_train, xtest = x_test, ytest = y_test, mtry = p, ntree = 500)
-rf_div = randomForest(x_train, y_train, xtest = x_test, ytest = y_test, mtry = p_div, ntree = 500)
-rf_sq = randomForest(x_train, y_train, xtest = x_test, ytest = y_test, mtry = p_sq, ntree = 500)
+p <- ncol(Boston) - 1
+mtry_grid <- sort(unique(c(1:6, floor(sqrt(p)), floor(p/2), p)))
+mtry_grid <- mtry_grid[mtry_grid >= 1 & mtry_grid <= p]
 
-plot(1:500, rf_p$test$mse, col = "green", type = "l", xlab = "tree count", ylab = "MSE", ylim = c(10, 19))
-lines(1:500, rf_div$test$mse, col = "red", type = "l")
-lines(1:500, rf_sq$test$mse, col = "blue", type = "l")
-legend("topright", c("m=p", "m=p/2", "m=sqrt(p)"), col = c("green", "red", "blue"), cex = 1, lty = 1)
+rf_list <- lapply(mtry_grid, function(m) {
+  randomForest(x_train, y_train, xtest = x_test, ytest = y_test, mtry = as.integer(m), ntree = 500)
+})
+
+mse_mat <- sapply(rf_list, function(mod) mod$test$mse)
+
+par(mfrow=c(1,1))
+matplot(1:500, mse_mat, type = "l", lty = 1, lwd = 1.5,
+        xlab = "tree count", ylab = "test MSE")
+legend("topright", legend = paste0("mtry=", mtry_grid), lty = 1, cex = 0.8, bty = "n")
+
+final_mse <- sapply(rf_list, function(mod) tail(mod$test$mse, 1))
+mtry_grid[which.min(final_mse)]
+# 6
 
 # 8
 # a.
@@ -139,7 +146,7 @@ text(seatsTree, pretty=0)
 
 seatsPred = predict(seatsTree, seatsTest)
 mean((seatsTest$Sales - seatsPred)^2)
-# 4.922
+# 4.467
 # c.
 seatsCV = cv.tree(seatsTree, FUN = prune.tree)
 par(mfrow = c(1, 2))
@@ -152,19 +159,19 @@ plot(seatsPruned)
 text(seatsPruned, pretty = 0)
 seatsPredPruned = predict(seatsPruned, seatsTest)
 mean((seatsTest$Sales - seatsPredPruned)^2)
-# 4.918, barely improved
+# 4.930, barely improved
 # d.
 seatsBagging = randomForest(Sales ~ ., data = seatsTrain, mtry = 10, ntree = 500, importance = T)
 seatsPred = predict(seatsBagging, seatsTest)
 mean((seatsTest$Sales - seatsPred)^2)
-# 2.657, significant improvement
+# 2.365, significant improvement
 importance(seatsBagging)
 # Price and ShelveLoc are the most important
 # e.
 seatsForest = randomForest(Sales ~ ., data = seatsTrain, mtry = 5, ntree = 500, importance = T)
 seatsPredForest = predict(seatsForest, seatsTest)
 mean((seatsTest$Sales - seatsPredForest)^2)
-# 2.701 also good
+# 2.526 also good
 importance(seatsForest)
 # Price and ShelveLoc are still most important
 # f.
@@ -175,11 +182,18 @@ bartTrain = mm[1:ntrain, , drop = FALSE]
 bartTest  = mm[(ntrain + 1):nrow(mm), , drop = FALSE]
 salesTrain = seatsTrain$Sales
 
-seatsBart = gbart(bartTrain, salesTrain, bartTest = bartTest, ntree = 200, ndpost = 2000, nskip = 500)
+seatsBart <- gbart(
+  x.train = bartTrain,
+  y.train = salesTrain,
+  x.test  = bartTest,
+  ntree   = 200,
+  ndpost  = 2000,
+  nskip   = 500
+)
 seatsBartPred = seatsBart$yhat.test.mean
 seatsBartMSE = mean((seatsTest$Sales - seatsBartPred)^2)
 print(seatsBartMSE)
-# 1.409
+# 1.451
 # significant improvement
 
 # 9
