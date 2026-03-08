@@ -33,7 +33,9 @@ m4
 10. boosting loop: lambdas makes a grid of learning rates .001 to 1 on a log scale, in the loop only shrinkage changes, fits a boosted regression model with 1000 trees and gets train and test predictions then stores the mse in the vectors. shrinkage controls learning speed, lower shrinkage/slower learning makes better generalization, larger shrinkage leads to risk of overfitting
 m5
 svm support vector machine is about finding the optimal hyperplane to classify data by maximizing the margin between classes, 
-
+2. this equation is quadratic, it makes a circle, if you add another x1 it wouldn't be a circle anymore
+3. we use svm to find the optimal boundary, support vectors are observations on the margin boundaries, the decision boundary is defined by the support vectors, if it's not right on the edge it doesn't affect the boundary,
+4. it works better because it's nonlinear, radial kernel is more flexible and handles it better than support vector classifier, 
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
 https://www.statlearning.com/resources-first-edition
