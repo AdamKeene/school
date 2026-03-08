@@ -123,23 +123,49 @@ err <- function(model, dat) {
 
 simRadial <- svm(class ~ ., data = simData[train, ], kernel = "radial")
 simRadialPred <- predict(simRadial, simData[test, ])
+err(simRadial, simData[train, ])
+# 0 training error
 err(simRadial, simData[test, ])
 # .08
 plot(simRadial, simData)
 
 simPolynomial <- svm(class ~ ., data = simData[train, ], kernel = "polynomial", degree = 2)
 simPolynomialPred <- predict(simPolynomial, simData[test, ])
-mean(simPolynomialPred != simData$class[test])
+err(simPolynomial, simData[train, ])
+# .28
+err(simPolynomial, simData[test, ])
 # .28
 plot(simPolynomial, simData)
 
 simLinear <- svm(class ~ ., data = simData[train, ], kernel = "linear")
 simLinearPred <- predict(simLinear, simData[test, ])
-mean(simLinearPred != simData$class[test])
-# .06
+err(simLinear, simData[train, ])
+# .04
+err(simLinear, simData[train, ])
+# .04
 plot(simLinear, simData)
 
 # Radial performs best closely followed by linear, Polynomial did the worst. 
 
 # 5
+# a.
+x1 <- runif (500) - 0.5
+x2 <- runif (500) - 0.5
+y <- 1 * (x1^2 - x2^2 > 0)
+df <- data.frame(x1, x2, y = factor(y))
+# b.
+p <- ggplot(df, aes(x = x1, y = x2, color = y)) + geom_point()
+p
+# c.
+lrfit <- glm(y ~ x1 + x2, family = "binomial")
+summary(lrfit)
+# d.
+prob = predict(lrfit, df, type = "response")
+pred = ifelse(prob > 0.5, 1, 0)
+pos = df[pred == 1, ]
+neg = df[pred == 0, ]
+plot(pos$x1, pos$x2, col = "blue", xlab = "X1", ylab = "X2", pch = 19, cex = .5)
+points(neg$x1, neg$x2, col = "red", pch = 19, cex = .5)
+# e.
+nlfit = glm(y ~ poly(x1, 2) + poly(x2, 2) + I(x1 * x2), data = data, family = binomial)
 # 7

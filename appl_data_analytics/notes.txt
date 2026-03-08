@@ -32,7 +32,7 @@ m4
 9. the error rate gets lower as size increases, it did go back up before I remembered set the seed so it does happen but not in this case, 8 because 9 would mean not pruning. pruning gave a better MSE but a worse misclassification error rate, meaning even though it did worse on a few instances in the test its still expected to perform better, since the differences were small it could be just a few edge cases, and also training mse got worse but test mse improved which is the goal of pruning
 10. boosting loop: lambdas makes a grid of learning rates .001 to 1 on a log scale, in the loop only shrinkage changes, fits a boosted regression model with 1000 trees and gets train and test predictions then stores the mse in the vectors. shrinkage controls learning speed, lower shrinkage/slower learning makes better generalization, larger shrinkage leads to risk of overfitting
 m5
-
+svm support vector machine is about finding the optimal hyperplane to classify data by maximizing the margin between classes, 
 
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
