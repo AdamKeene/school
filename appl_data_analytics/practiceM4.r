@@ -221,18 +221,18 @@ ojTable
 # f.
 ojCV <- cv.tree(orangeTree)
 ojCV
-# 9 has the smallest standard deviance at 685
+# 9 has the smallest standard deviance at 685, 9 is the size of the original tree, next best is 8 at 699
 # g.
 plot(ojCV$size, ojCV$dev, type = "b", xlab = "size", ylab = "deviance")
 # h.
-# 6, 7, and 9 are tied for the lowest
+# 8 is the lowest aside from 9
 # i.
-prunedOrangeTree <- prune.tree(orangeTree, best = 7)
+prunedOrangeTree <- prune.tree(orangeTree, best = 8)
 plot(prunedOrangeTree)
 text(prunedOrangeTree, pretty=0)
 # j.
 summary(prunedOrangeTree)
-# The misclassification error rate is 16.25%, which is slightly better than the original 17.04%
+# The misclassification error rate is 16.25% slightly worse than the original 15.88%
 # k.
 ojPredUnpruned = predict(orangeTree, ojTest, type = "class")
 unprunedMisclass = sum(ojTest$Purchase != ojPredUnpruned)
@@ -273,9 +273,9 @@ plot(lambdas, trainMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
 plot(lambdas, testMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
 # e.
 min(testMSE)
-# .2531
+# .2607
 hitLinReg <- lm(Salary ~ ., data = hitData[trainRange, ])
-mean((predict(linreg, hitData[trainRange, ]) - hitData[trainRange, "Salary"])^2)
+mean((predict(hitLinReg, hitData[trainRange, ]) - hitData[trainRange, "Salary"])^2)
 # .3204
 x = model.matrix(Salary ~ ., data = hitTrain)
 y = hitTrain$Salary
@@ -295,7 +295,6 @@ mean((hitTest$Salary - hitPred)^2)
 # .2286
 
 # 12
-# Use College data to predict application demand: log(Apps)
 collegeData = na.omit(College)
 collegeData$logApps = log(collegeData$Apps)
 collegeData$Apps = NULL
