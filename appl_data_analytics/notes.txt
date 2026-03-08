@@ -36,6 +36,8 @@ svm support vector machine is about finding the optimal hyperplane to classify d
 2. this equation is quadratic, it makes a circle, if you add another x1 it wouldn't be a circle anymore
 3. we use svm to find the optimal boundary, support vectors are observations on the margin boundaries, the decision boundary is defined by the support vectors, if it's not right on the edge it doesn't affect the boundary,
 4. it works better because it's nonlinear, radial kernel is more flexible and handles it better than support vector classifier, 
+5. using linear models on nonlinear boundaries doesn't work, best results came from nonlinear svm, linear svm and linear regression clearly didn't work because they try to fit nonlinear data into a linear distribution
+7. cost range is a normal cost range, start stop step 
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
 https://www.statlearning.com/resources-first-edition

@@ -1,5 +1,6 @@
 library(ggplot2)
 library(e1071)
+library(ISLR2)
 set.seed(1)
 
 # 1
@@ -154,18 +155,72 @@ x2 <- runif (500) - 0.5
 y <- 1 * (x1^2 - x2^2 > 0)
 df <- data.frame(x1, x2, y = factor(y))
 # b.
-p <- ggplot(df, aes(x = x1, y = x2, color = y)) + geom_point()
+p <- plot(df$x1, df$x2, col = ifelse(df$y == "1", "blue", "red"), xlab = "X1", ylab = "X2", pch = 19, cex = 0.5)
 p
 # c.
-lrfit <- glm(y ~ x1 + x2, family = "binomial")
+lrfit <- glm(y ~ x1 + x2, data = df, family = "binomial")
 summary(lrfit)
 # d.
-prob = predict(lrfit, df, type = "response")
-pred = ifelse(prob > 0.5, 1, 0)
-pos = df[pred == 1, ]
-neg = df[pred == 0, ]
-plot(pos$x1, pos$x2, col = "blue", xlab = "X1", ylab = "X2", pch = 19, cex = .5)
-points(neg$x1, neg$x2, col = "red", pch = 19, cex = .5)
+lrprob <- predict(lrfit, newdata = df, type = "response")
+lrpred <- factor(ifelse(lrprob > 0.5, 1, 0), levels = c(0, 1))
+plot(df$x1, df$x2, col = ifelse(lrpred == "1", "blue", "red"), xlab = "X1", ylab = "X2", pch = 19, cex = 0.5)
+# looks linear
 # e.
-nlfit = glm(y ~ poly(x1, 2) + poly(x2, 2) + I(x1 * x2), data = data, family = binomial)
+nlfit = glm(y ~ poly(x1, 2) + poly(x2, 2) + I(x1 * x2), data = df, family = binomial)
+# f.
+nlprob = predict(nlfit, df, type = "response")
+nlpred = factor(ifelse(nlprob > 0.5, 1, 0))
+plot(df$x1, df$x2, col = ifelse(nlpred == "1", "blue", "red"), xlab = "X1", ylab = "X2", pch = 19, cex = 0.5)
+# clearly non-linear, better resembles correct results
+# g.
+svmfit = svm(as.factor(y) ~ x1 + x2, df, kernel = "linear")
+svmpred = predict(svmfit, df)
+plot(df$x1, df$x2, col = ifelse(svmpred == "1", "blue", "red"), xlab = "X1", ylab = "X2", pch = 19, cex = 0.5)
+# flat line, linear kernel doesn't work on nonlinear data
+# h.
+svmnlfit = svm(as.factor(y) ~ x1 + x2, df, kernel = "polynomial", degree = 2)
+svmnlpred = predict(svmnlfit, df)
+plot(df$x1, df$x2, col = ifelse(svmnlpred == "1", "blue", "red"), xlab = "X1", ylab = "X2", pch = 19, cex = 0.5)
+# only works with degree = 2 because of the quadratic decision boundary
+# much better result
+# i. Non-linear kernels are required to get meaningful results from non-linear data, the quadratic svm kernel was able to produce much more accurate results than the linear regression and linear svm attempts.
+
 # 7
+# a. 
+data = Auto
+gasmed = median(data$mpg)
+gasvar = ifelse(data$mpg > gasmed, 1, 0)
+data$mpgvar = as.factor(gasvar)
+# b.
+costs <- 10^seq(-4, 3, by = 0.5)
+linear = tune(svm,
+              mpgvar ~ displacement + horsepower + weight,
+              data = data, 
+              kernel = "linear",
+              ranges = list(cost = costs)
+)
+summary(linear)
+# c.
+polynomial = tune(svm, 
+                  mpgvar ~ displacement + horsepower + weight,
+                  data = data, 
+                  kernel = "polynomial",
+                  ranges = list(cost = costs, degree = 1:3)
+                  )
+summary(polynomial)
+
+radial = tune(svm, 
+              mpgvar ~ displacement + horsepower + weight,
+              data = data, 
+              kernel = "radial",
+              ranges = list(cost = costs, gamma = 10^(-2:1))
+)
+summary(radial)
+# d.
+
+
+bestlinear = svm(mpglevel ~ ., data = data, kernel = "linear", cost = 0.03162278)
+bestpolynomial = svm(mpglevel ~ ., data = data, kernel = "polynomial", cost = 10, 
+    degree = 2)
+bestradial = svm(mpglevel ~ ., data = data, kernel = "radial", cost = 10, gamma = 0.01)
+
