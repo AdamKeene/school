@@ -17,10 +17,10 @@ points$region1 <- ifelse(1 + 3 * points$X1 - points$X2 > 0, "1 + 3X1 - X2 > 0", 
 points$region2 <- ifelse(-2 + points$X1 + 2 * points$X2 > 0, "-2 + X1 + 2X2 > 0", "-2 + X1 + 2X2 < 0")
 
 ggplot(points, aes(X1, X2)) +
-  geom_point(aes(color = region1, shape = region2), size = 1.2, alpha = 0.55) +
+  geom_point(aes(color = region1), size = 1.2, alpha = 0.55) +
   geom_abline(intercept = 1, slope = 3, linewidth = 1) +
   coord_cartesian(xlim = xlim, ylim = ylim) +
-  labs(x = "X1", y = "X2", color = "First inequality", shape = "Second inequality") +
+  labs(x = "X1", y = "X2") +
   theme_bw()
 
 # b.
@@ -28,10 +28,10 @@ ggplot(points, aes(X1, X2)) +
   geom_point(aes(color = region1, shape = region2), size = 1.2, alpha = 0.55) +
   geom_abline(intercept = 1, slope = 3, linewidth = 1) +
   geom_abline(intercept = 1, slope = -0.5, linetype = "dashed", linewidth = 1) +
-  scale_color_manual(values = c("1 + 3X1 - X2 > 0" = "tomato", "1 + 3X1 - X2 < 0" = "steelblue")) +
+  scale_color_manual(values = c("1 + 3X1 - X2 > 0" = "red", "1 + 3X1 - X2 < 0" = "blue")) +
   scale_shape_manual(values = c("-2 + X1 + 2X2 > 0" = 16, "-2 + X1 + 2X2 < 0" = 1)) +
   coord_cartesian(xlim = xlim, ylim = ylim) +
-  labs(x = "X1", y = "X2", color = "First inequality", shape = "Second inequality") +
+  labs(x = "X1", y = "X2") +
   theme_bw()
 
 # 2
@@ -216,11 +216,20 @@ radial = tune(svm,
               ranges = list(cost = costs, gamma = 10^(-2:1))
 )
 summary(radial)
+
+# radial did best with 0.08153846, support vector classifier second with 0.1017308, last was polynomial with 0.1047436.
+# relationship is likely nonlinear but smooth
 # d.
+plot(linear$best.model, data, displacement ~ horsepower)
+plot(linear$best.model, data, weight ~ horsepower)
+plot(linear$best.model, data, weight ~ displacement)
 
+plot(polynomial$best.model, data, displacement ~ horsepower)
+plot(polynomial$best.model, data, weight ~ horsepower)
+plot(polynomial$best.model, data, weight ~ displacement)
 
-bestlinear = svm(mpglevel ~ ., data = data, kernel = "linear", cost = 0.03162278)
-bestpolynomial = svm(mpglevel ~ ., data = data, kernel = "polynomial", cost = 10, 
-    degree = 2)
-bestradial = svm(mpglevel ~ ., data = data, kernel = "radial", cost = 10, gamma = 0.01)
+plot(radial$best.model, data, displacement ~ horsepower)
+plot(radial$best.model, data, weight ~ horsepower)
+plot(radial$best.model, data, weight ~ displacement)
 
+# The displacement and horsepower plots seem most accurate, the linear and polynomial plots are very similar, and the radial plots are all incorrect in different ways. The linear and polynomial plots tend to misclassify false negatives more than false positives, including the displacement and horsepower plots.
