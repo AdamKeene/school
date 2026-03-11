@@ -43,6 +43,9 @@ m6
 5. logistic regression is used for binary classification, it's regression on a log shaped plot like an s shape, average of three times is probably going to be more accurate than one, we took a random split for test and train so we can just reuse the whole thing as a function
 6. bootstrapping is resampling with replacement, same result because glm accurately predicted the error in this case, on smaller or more nonstandard data bootstrapping may have returned different results.
 8. cv.glm is loocv by default, its a quadratic equation so the degreit de of two is going to produce the best results, adding more doesn't improve the equation it just flattens out, and at the end we see the linear and quadratic terms are the only significant ones and adding a third didn't help
+m7
+centroid is geometric center, scale and spread affect k-mean clustering results so its important to standardize scale first, euclidean distance is sensitive to magnitude and correlation ignores it so without standardizing they're different but after standardizing they're the same
+9 dist() is euclidean, 
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
 https://www.statlearning.com/resources-first-edition
