@@ -1,8 +1,13 @@
-existing class movie to hold returned data, interface class movieapiservice with get method, retrofit builder object called retrofit which creates a movieapiservice object, calls on object make async get requests
+existing class movie to hold returned data, 
+interface class movieapiservice with get method, 
+retrofit builder object called retrofit which creates a movieapiservice object, calls on object make async get requests
 existing recyclerview: viewholder which displays single items, oncreateviewholder which creates viewholders, onbindviewholder which binds data to a view, and getitemcount which reports dataset size. in programlistactivity connect recyclerview to data in programs 
-implementation:
-movieapiservice new get method, just needs the function and api key
-TopRatedResponse we need to save a list of Movie objects instead of just one so we use this wrapper object, modeled after Movie class, retrofit uses gson which uses the serializedname
-MovieListAdapter same as ProgramListAdapter, tells recyclerview how to display the data from the movie list and add the helper functions 
-MovieListActivity get correct recyclerView and set screen and list behavior, setContentView gets xml layout, then get recyclerview from it, set the size as fixed for performance, linearlayoutmanager makes it vertical scroll, connect starts the data load, all that is same as before. retrofit object with the url and auto conversion to java objects, implemented in MovieApiService which is called using the endpoint call, then we execute at call.enqueue
 
+implementation:
+movieapiservice new get method, just needs the function and api key, /top_rated is the endpoint for getting top rated movies
+TopRatedResponse we need to save a list of Movie objects instead of just one so we use this wrapper object, modeled after Movie class, retrofit uses gson which uses the serializedname
+MovieListAdapter same as ProgramListAdapter, viewholder class called viewholder tells recyclerview how to display the data from individual movies and add the helper functions, oncreate creates it and onbind binds the data to it, and a size helper function
+MovieListActivity get correct recyclerView and set screen and list behavior, setContentView gets xml layout, then get recyclerview from it, set the size as fixed for performance, linearlayoutmanager makes it vertical scroll, connect starts the data load, all that is same as before. retrofit object with the url and auto conversion to java objects, implemented in MovieApiService which is called using the endpoint call, then we execute at call.enqueue
+MainActivity movie list button starts the process, clicking the button creates a movielistactivity class from movielistactivity on create, when that calls connect it builds the retrofit setup and calls the movie api service getTopRatedMovies which builds the call, enqueue actually makes the call, it saves the response as a list of movies then saves the list of movies we ultimately use in another list then set the adapter to a new movielistadapter, that triggers oncreate and then onbind which binds individual movies to each row and then picasso displays it
+
+rest bc resource-oriented endpoints, requests between services are stateless

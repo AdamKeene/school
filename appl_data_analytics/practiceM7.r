@@ -83,3 +83,42 @@ stats <- data.frame(
 stats
 
 # 10
+# a.
+set.seed(2) # 1 not separated
+db = matrix(rnorm(60 * 50), nrow = 60, ncol = 50)
+classes = factor(rep(c("A", "B", "C"), each = 20))
+db[classes == "B", 1:10] = db[classes == "B", 1:10] + 1.2
+db[classes == "C", 5:30] = db[classes == "C", 5:30] + 1.0
+# b.
+pca = prcomp(db)
+class_factor = factor(classes)
+
+plot(
+  pca$x[, 1], pca$x[, 2],
+  col = c("red", "blue", "green")[class_factor],
+  pch = 19,
+  xlab = "PC1",
+  ylab = "PC2",
+)
+
+legend(
+  "topright",
+  legend = levels(class_factor),
+  col = c("red", "blue", "green"),
+  pch = 19,
+)
+# c.
+km = kmeans(db, 3)$cluster
+table(km, classes)
+# d.
+km = kmeans(db, 2)$cluster
+table(km, classes)
+# e.
+km = kmeans(db, 4)$cluster
+table(km, classes)
+# f.
+km_2pc = kmeans(pca$x[, 1:2], 3)$cluster
+table(km_2pc, classes)
+# g.
+km = kmeans(scale(db), 3)$cluster
+table(km, classes)

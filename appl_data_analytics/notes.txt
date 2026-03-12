@@ -1,7 +1,7 @@
 m1
 1. bias-variance tradeoff, as the number of predictors increases the model becomes more flexible, meaning it can better fit the training data but at the risk of increasing variance and overfitting, so a more flexible model is better suited for datasets less prone to overfitting like larger sample sizes, fewer predictors, less noisy data, or nonlinear relationships, and inflexible models are better suited for small sample size more predictors noisy data and linear relationships
 2. classification problems are classifying things, placing things into categories, regression problems are assigning a value to something, we're interested in inference when we want the factors which affect the outcome and understand the relationships of the predictors, and we're interested in prediction when we just want an accurate prediction.
-4. read example titles
+4. read example titles, clustering is splitting into categories rather than classifying into existing ones
 5. with regression problems overfitting looks like a more wobbly unstable line on the chart and with classification it's more wobbly boundaries, but the factors for choosing a type of model are the same, sample size, number of predictors, noise in the data, inference or prediction, linear relationship or not
 6. parametric models assume a functional form and non-parametric models don't, having a function makes it easier to interpret and works well when we can find the function, but when the function is wrong it obviously hurts the performance, parametric models are more inflexible and the tradeoffs are similar with flexible and inflexible models and generally you take the same factors into consideration.
 8. remove the titles, pairs: some have a clear relationship some don't, boxplot: out of state tuition is higher for private schools, yes/no: 78 elite schools 700 not, boxplot: elite schools have higher tuition, histograms: schools tend to have less than 5000 full time undergrads, out of state tuition is usually 5000 to 15000 and it kinda stays up past that, schools more often have a higher percentage of terminal degree staff than not, elite schools have a higher graduation rate and cost more
@@ -44,8 +44,17 @@ m6
 6. bootstrapping is resampling with replacement, same result because glm accurately predicted the error in this case, on smaller or more nonstandard data bootstrapping may have returned different results.
 8. cv.glm is loocv by default, its a quadratic equation so the degreit de of two is going to produce the best results, adding more doesn't improve the equation it just flattens out, and at the end we see the linear and quadratic terms are the only significant ones and adding a third didn't help
 m7
-centroid is geometric center, scale and spread affect k-mean clustering results so its important to standardize scale first, euclidean distance is sensitive to magnitude and correlation ignores it so without standardizing they're different but after standardizing they're the same
+
 9 dist() is euclidean, 
+2 heirarchical clustering is an algorithm for clustering that doesn't require a pre defined number of clusters, single linkage is a type of heirarchical clustering that clusters by a minimum distance between any two points. dendrogram order is arbitrary
+3 centroid is geometric center, since it should represent the current cluster recomputing it after changing the values assigned to a cluster can make it more accurate to the actual center
+5 scale and spread affect k-mean clustering results so its important to standardize scale first
+7 euclidean distance is sensitive to magnitude and correlation ignores it so without standardizing they're different but after standardizing they're the same
+9 we see its important to scale in this dataset because assault has a much bigger scale and range than the other variables
+10 pca clustering reduces the dimensions to the important ones with the relevant information, at the end first two vectors still works, scale doesn't do anything bc they're on the same scale
+
+
+
 ------------------------------------------------------------
 https://github.com/danhalligan/ISLRv2-solutions/tree/main
 https://www.statlearning.com/resources-first-edition
