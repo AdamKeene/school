@@ -1,0 +1,339 @@
+library(ISLR2)
+library(MASS)
+library(randomForest)
+library(tree)
+library(BART)
+library(gbm)
+library(glmnet)
+set.seed(1)
+
+df <- na.omit(Auto[, c("horsepower", "weight")])
+
+t1 <- 110
+t2 <- 2600
+t3 <- 80
+t4 <- 3200
+t5 <- 3400
+
+xmin <- min(df$horsepower)
+xmax <- max(df$horsepower)
+ymin <- min(df$weight)
+ymax <- max(df$weight)
+
+par(mfrow = c(1, 2), mar = c(4.5, 4.5, 3, 1))
+
+plot(df$horsepower, df$weight, cex = 0.6, xlab = "horsepower", ylab = "weight", main = "Recursive Binary Partition")
+
+segments(t1, ymin, t1, ymax, lwd = 2)
+segments(xmin, t2, t1, t2, lwd = 2)
+segments(t3, ymin, t3, t2, lwd = 2)
+segments(xmin, t4, t1, t4, lwd = 2)
+segments(t1, t5, xmax, t5, lwd = 2)
+
+text((xmin + t3) / 2, (ymin + t2) / 2, "R1")
+text((t3 + t1) / 2, (ymin + t2) / 2, "R2")
+text((xmin + t1) / 2, (t2 + t4) / 2, "R3")
+text((xmin + t1) / 2, (t4 + ymax) / 2, "R4")
+text((t1 + xmax) / 2, (ymin + t5) / 2, "R5")
+text((t1 + xmax) / 2, (t5 + ymax) / 2, "R6")
+
+plot.new()
+plot.window(xlim = c(0, 1), ylim = c(0, 1))
+title("Decision Tree")
+
+# y-levels
+y0 <- 0.88
+y1 <- 0.70
+y2 <- 0.52
+y3 <- 0.34
+y4 <- 0.52
+
+# x-positions
+x_root <- 0.50
+xL <- 0.25
+xR <- 0.75
+xLL <- 0.12
+xLR <- 0.38
+xR1 <- 0.06
+xR2 <- 0.18
+xR3 <- 0.30
+xR4 <- 0.46
+xR5 <- 0.66
+xR6 <- 0.84
+
+# horsepower < t1
+segments(xL, y0, xR, y0)
+segments(xL, y0, xL, y1)
+segments(xR, y0, xR, y1)
+text(x_root, y0 + 0.03, expression(horsepower < t[1]~~": 110"))
+
+# weight < t2
+segments(xLL, y1, xLR, y1)
+segments(xLL, y1, xLL, y2)
+segments(xLR, y1, xLR, y2)
+text((xLL + xLR) / 2, y1 + 0.03, expression(weight < t[2]~~": 2600"))
+
+# horsepower < t3
+segments(xR1, y2, xR2, y2)
+segments(xR1, y2, xR1, y3)
+segments(xR2, y2, xR2, y3)
+text((xR1 + xR2) / 2, y2 + 0.03, expression(horsepower < t[3]~~": 80"))
+
+# weight < t4 -> R3, R4
+segments(xR3, y2, xR4, y2)
+segments(xR3, y2, xR3, y3)
+segments(xR4, y2, xR4, y3)
+text((xR3 + xR4) / 2, y2 + 0.03, expression(weight < t[4]~~": 3200"))
+
+# weight < t5 -> R5, R6
+segments(xR5, y1, xR6, y1)
+segments(xR5, y1, xR5, y4)
+segments(xR6, y1, xR6, y4)
+text((xR5 + xR6) / 2, y1 + 0.03, expression(weight < t[5]~~": 3400"))
+
+# labels
+text(xR1, y3 - 0.03, "R1")
+text(xR2, y3 - 0.03, "R2")
+text(xR3, y3 - 0.03, "R3")
+text(xR4, y3 - 0.03, "R4")
+text(xR5, y4 - 0.03, "R5")
+text(xR6, y4 - 0.03, "R6")
+
+# 3
+par(mfrow=c(1,1))
+prange = seq(0, 1, 0.01)
+gini = prange * (1 - prange) * 2
+entropy = -(prange * log(prange) + (1 - prange) * log(1 - prange))
+class.err = 1 - pmax(prange, 1 - prange)
+matplot(prange, cbind(gini, entropy, class.err), type = "l", lty = 1, col = c("red" ,"green", "blue"))
+
+# 7
+boston_train <- sample(nrow(Boston), nrow(Boston) / 2)
+x_train <- Boston[boston_train, -14]
+x_test  <- Boston[-boston_train, -14]
+y_train <- Boston[boston_train, 14]
+y_test  <- Boston[-boston_train, 14]
+
+p <- ncol(Boston) - 1
+mtry_grid <- sort(unique(c(1:6, floor(sqrt(p)), floor(p/2), p)))
+mtry_grid <- mtry_grid[mtry_grid >= 1 & mtry_grid <= p]
+
+rf_list <- lapply(mtry_grid, function(m) {
+  randomForest(x_train, y_train, xtest = x_test, ytest = y_test, mtry = as.integer(m), ntree = 500)
+})
+
+mse_mat <- sapply(rf_list, function(mod) mod$test$mse)
+
+par(mfrow=c(1,1))
+matplot(1:500, mse_mat, type = "l", lty = 1, lwd = 1.5,
+        xlab = "tree count", ylab = "test MSE")
+legend("topright", legend = paste0("mtry=", mtry_grid), lty = 1, cex = 0.8, bty = "n")
+
+final_mse <- sapply(rf_list, function(mod) tail(mod$test$mse, 1))
+mtry_grid[which.min(final_mse)]
+# 6
+
+# 8
+# a.
+seats = sample(dim(Carseats)[1], dim(Carseats)[1]/2)
+seatsTrain = Carseats[seats, ]
+seatsTest = Carseats[-seats, ]
+# b.
+seatsTree = tree(Sales ~ ., data = seatsTrain)
+summary(seatsTree)
+plot(seatsTree)
+text(seatsTree, pretty=0)
+
+seatsPred = predict(seatsTree, seatsTest)
+mean((seatsTest$Sales - seatsPred)^2)
+# 4.467
+# c.
+seatsCV = cv.tree(seatsTree, FUN = prune.tree)
+par(mfrow = c(1, 2))
+plot(seatsCV$size, seatsCV$dev, type = "b")
+plot(seatsCV$k, seatsCV$dev, type = "b")
+
+seatsPruned = prune.tree(seatsTree, best = 9)
+par(mfrow = c(1, 1))
+plot(seatsPruned)
+text(seatsPruned, pretty = 0)
+seatsPredPruned = predict(seatsPruned, seatsTest)
+mean((seatsTest$Sales - seatsPredPruned)^2)
+# 4.930, barely improved
+# d.
+seatsBagging = randomForest(Sales ~ ., data = seatsTrain, mtry = 10, ntree = 500, importance = T)
+seatsPred = predict(seatsBagging, seatsTest)
+mean((seatsTest$Sales - seatsPred)^2)
+# 2.365, significant improvement
+importance(seatsBagging)
+# Price and ShelveLoc are the most important
+# e.
+seatsForest = randomForest(Sales ~ ., data = seatsTrain, mtry = 5, ntree = 500, importance = T)
+seatsPredForest = predict(seatsForest, seatsTest)
+mean((seatsTest$Sales - seatsPredForest)^2)
+# 2.526 also good
+importance(seatsForest)
+# Price and ShelveLoc are still most important
+# f.
+full_x = rbind(subset(seatsTrain, select = -Sales), subset(seatsTest, select = -Sales))
+mm = model.matrix(~ . - 1, data = full_x)
+ntrain = nrow(seatsTrain)
+bartTrain = mm[1:ntrain, , drop = FALSE]
+bartTest  = mm[(ntrain + 1):nrow(mm), , drop = FALSE]
+salesTrain = seatsTrain$Sales
+
+seatsBart <- gbart(
+  x.train = bartTrain,
+  y.train = salesTrain,
+  x.test  = bartTest,
+  ntree   = 200,
+  ndpost  = 2000,
+  nskip   = 500
+)
+seatsBartPred = seatsBart$yhat.test.mean
+seatsBartMSE = mean((seatsTest$Sales - seatsBartPred)^2)
+print(seatsBartMSE)
+# 1.451
+# significant improvement
+
+# 9
+# a.
+?OJ
+ntrain <- sample(1:nrow(OJ), 800)
+ojTrain <- OJ[ntrain, ]
+ojTest <- OJ[-ntrain, ]
+# b.
+orangeTree <- tree(Purchase ~ ., ojTrain)
+summary(orangeTree)
+# 16.88% error, 10 terminal nodes
+# c.
+orangeTree
+# 2) LoyalCH is one of 8 times LoyalCH appears in the tree. It has a splitting value of .504, there are 365 points below it, the deviance for all points below it is 441.6, and the prediction for this subset is MM at 70.69% compared to 29.32% CH.
+# d.
+plot(orangeTree)
+text(orangeTree, pretty=0)
+# LoyalCH is quite important being all over the upper half of the tree, PriceDiff is also important, not much else matters. Loyalty to Citrus Hill matters much more than to Minute Maid, and the only other thing that matters is price.
+# e.
+ojPred <- predict(orangeTree, ojTest, type="class")
+ojTable <- table(ojTest$Purchase, ojPred)
+ojTable
+1-sum(diag(ojTable)/sum(ojTable))
+# f.
+ojCV <- cv.tree(orangeTree)
+ojCV
+# 9 has the smallest standard deviance at 685, 9 is the size of the original tree, next best is 8 at 699
+# g.
+plot(ojCV$size, ojCV$dev, type = "b", xlab = "size", ylab = "deviance")
+# h.
+# 8 is the lowest aside from 9
+# i.
+prunedOrangeTree <- prune.tree(orangeTree, best = 8)
+plot(prunedOrangeTree)
+text(prunedOrangeTree, pretty=0)
+# j.
+summary(prunedOrangeTree)
+# The misclassification error rate is 16.25% slightly worse than the original 15.88%
+# k.
+ojPredUnpruned = predict(orangeTree, ojTest, type = "class")
+unprunedMisclass = sum(ojTest$Purchase != ojPredUnpruned)
+unprunedMisclass/length(ojPredUnpruned)
+# .1704
+ojPredPruned = predict(prunedOrangeTree, ojTest, type = "class")
+prunedMisclass = sum(ojTest$Purchase != ojPredPruned)
+prunedMisclass/length(ojPredPruned)
+# .1630
+# pruned wins with a .0074 improvement
+
+# 10
+# #a.
+sum(is.na(Hitters$Salary))
+# 59
+hitData <- Hitters
+hitData <- hitData[!is.na(hitData$Salary), ]
+hitData$Salary <- log(hitData$Salary)
+# b.
+trainRange = 1:200
+hitTrain = hitData[trainRange, ]
+hitTest = hitData[-trainRange, ]
+# c.
+lambdas <- 10^seq(-3, 0, by = 0.1)
+trainMSE <- numeric(length(lambdas))
+testMSE <- numeric(length(lambdas))
+
+for (i in seq_along(lambdas)) {
+  fit <- gbm(Salary ~ ., data = hitTrain, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[i])
+  trainPred <- predict(fit, hitTrain, n.trees = 1000)
+  testPred <- predict(fit, hitTest, n.trees = 1000)
+  trainMSE[i] <- mean((hitTrain$Salary - trainPred)^2)
+  testMSE[i] <- mean((hitTest$Salary - testPred)^2)
+}
+
+plot(lambdas, trainMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
+# d.
+plot(lambdas, testMSE, type = "l", xlab = "shrinkage", ylab = "MSE", log = "x")
+# e.
+min(testMSE)
+# .2607
+hitLinReg <- lm(Salary ~ ., data = hitData[trainRange, ])
+mean((predict(hitLinReg, hitData[trainRange, ]) - hitData[trainRange, "Salary"])^2)
+# .3204
+x = model.matrix(Salary ~ ., data = hitTrain)
+y = hitTrain$Salary
+xTest = model.matrix(Salary ~ ., data = hitTest)
+lasso.fit = glmnet(x, y, alpha = 1)
+lasso.pred = predict(lasso.fit, s = 0.01, newx = xTest)
+mean((hitTest$Salary - lasso.pred)^2)
+# .4701
+# both methods performed worse
+# f.
+summary(gbm(Salary ~ ., data = hitTrain, distribution = "gaussian", n.trees = 1000, shrinkage = lambdas[which.min(testMSE)]))
+# CAtBat and CRBI are most important predictors
+# g.
+hitRF = randomForest(Salary ~ ., data = hitTrain, ntree = 500, mtry = 19)
+hitPred = predict(hitRF, hitTest)
+mean((hitTest$Salary - hitPred)^2)
+# .2286
+
+# 12
+collegeData = na.omit(College)
+collegeData$logApps = log(collegeData$Apps)
+collegeData$Apps = NULL
+
+n = nrow(collegeData)
+trainIdx = sample(1:n, n/2)
+collegeTrain = collegeData[trainIdx, ]
+collegeTest = collegeData[-trainIdx, ]
+
+# Boosting
+collegeBoost = gbm(logApps ~ ., data = collegeTrain, distribution = "gaussian", n.trees = 1000, shrinkage = 0.01)
+boostPred = predict(collegeBoost, newdata = collegeTest, n.trees = 1000)
+mean((collegeTest$logApps - boostPred)^2)
+# .0466
+
+# bagging
+predCount = ncol(collegeTrain) - 1
+collegeBag = randomForest(logApps ~ ., data = collegeTrain, mtry = predCount, ntree = 500)
+bagPred = predict(collegeBag, newdata = collegeTest)
+mean((collegeTest$logApps - bagPred)^2)
+# .0482
+
+# random forest
+collegeRF = randomForest(logApps ~ ., data = collegeTrain, mtry = floor(sqrt(predCount)), ntree = 500)
+rfPred = predict(collegeRF, newdata = collegeTest)
+mean((collegeTest$logApps - rfPred)^2)
+# .0611
+
+# BART
+allX = rbind(subset(collegeTrain, select = -logApps), subset(collegeTest, select = -logApps))
+allMM = model.matrix(~ . - 1, data = allX)
+nTrain = nrow(collegeTrain)
+bartTrainX = allMM[1:nTrain, , drop = FALSE]
+bartTestX = allMM[(nTrain + 1):nrow(allMM), , drop = FALSE]
+bartY = collegeTrain$logApps
+
+collegeBART = gbart(bartTrainX, bartY, x.test = bartTestX, ntree = 200, ndpost = 1000, nskip = 200)
+bartPred = collegeBART$yhat.test.mean
+mean((collegeTest$logApps - bartPred)^2)
+# .0582
+
+# boosting and bagging performed best
